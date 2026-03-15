@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LandBank Home Loan Requirements – Presentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              landbank: { green: '#007a33', dark: '#00441f', gold: '#c9a13a' },
+              navy: { DEFAULT: '#1e3a5f', dark: '#0f2744' },
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      html { scroll-behavior: smooth; }
+      .slides-viewport {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      .slides-track {
+        display: flex;
+        height: 100%;
+        will-change: transform;
+      }
+      .slides-track .slide {
+        flex: 0 0 100vw;
+        width: 100vw;
+        min-width: 100vw;
+        max-width: 100vw;
+        height: 100%;
+        box-sizing: border-box;
+      }
+      .slide {
+        opacity: 1;
+        visibility: visible;
+      }
+      .slide .slide-animate-title,
+      .slide .slide-animate-desc,
+      .slide .slide-animate-image,
+      .slide .slide-animate-cards > *,
+      .slide .slide-animate-hero-text > * {
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .presentation-mode header { display: none; }
+      #exitPresentationBtn { display: none; }
+      .presentation-mode #exitPresentationBtn { display: inline-flex !important; }
+
+      /* Canva-style diagonal & shapes */
+      .hero-diagonal-bottom {
+        clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+      }
+      /* Sharp diagonal split – left image, right white content */
+      .split-image-left {
+        clip-path: polygon(0 0, 78% 0, 100% 100%, 0 100%);
+      }
+      .split-content-right {
+        clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%);
+      }
+      .polygon-accent {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%);
+      }
+      .diagonal-stripes {
+        background-image: linear-gradient(135deg, rgba(0,122,51,0.04) 25%, transparent 25%),
+          linear-gradient(225deg, rgba(0,122,51,0.04) 25%, transparent 25%);
+        background-size: 20px 20px;
+      }
+      .card-hover {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -12px rgba(0, 68, 31, 0.2);
+      }
+      /* Premium PROCESS TIMELINE – CSS variables */
+      .journey-slide {
+        --journey-green: #007a33;
+        --journey-green-mid: #059669;
+        --journey-green-soft: #10b981;
+        --journey-bg-start: #f0fdf4;
+        --journey-bg-end: #a7f3d0;
+        --journey-white: #ffffff;
+        --journey-text: #0f172a;
+        --journey-muted: #64748b;
+      }
+      .journey-glass {
+        position: relative;
+        background: rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(5, 150, 105, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+        overflow: visible;
+        padding-bottom: 28px;
+      }
+      .journey-glass::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 28px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 28' preserveAspectRatio='none'%3E%3Cpath fill='rgba(240,253,244,0.9)' d='M0 28 Q400 4 600 14 T1200 28 L1200 28 L0 28 Z'/%3E%3Cpath fill='rgba(255,255,255,0.5)' d='M0 28 Q300 12 600 20 T1200 28 L0 28 Z'/%3E%3C/svg%3E") no-repeat center bottom;
+        background-size: 100% 100%;
+        pointer-events: none;
+        border-radius: 0 0 28px 28px;
+      }
+      .journey-timeline-line {
+        background: linear-gradient(90deg, #007a33 0%, #059669 25%, #10b981 50%, #34d399 75%, #6ee7b7 100%);
+        height: 6px;
+        border-radius: 3px;
+        box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
+      }
+      .journey-step-circle {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: box-shadow 0.3s ease, transform 0.2s ease;
+        flex-shrink: 0;
+      }
+      .journey-step-circle.active {
+        background: var(--journey-green);
+        color: var(--journey-white);
+        box-shadow: 0 0 0 4px rgba(255,255,255,0.95), 0 0 24px 6px rgba(0, 122, 51, 0.5);
+        transform: translateY(-1px);
+      }
+      .journey-step-circle.done {
+        background: var(--journey-white);
+        color: #047857;
+        border: 2px solid var(--journey-green-mid);
+      }
+      .journey-step-circle.pending {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 2px solid #a7f3d0;
+      }
+      .journey-card {
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        box-shadow: 0 8px 32px rgba(15, 23, 42, 0.06);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+      }
+      .journey-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 50px -10px rgba(0, 68, 31, 0.25);
+      }
+      .journey-card-icon {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        color: #047857;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+      .journey-cta {
+        background: linear-gradient(180deg, #059669 0%, #047857 50%, #065f46 100%) !important;
+        box-shadow: 0 8px 24px rgba(5, 150, 105, 0.4);
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+      }
+      .journey-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 40px -4px rgba(0, 68, 31, 0.55);
+      }
+      .journey-step-circle.active {
+        animation: journeyStepGlow 2.5s ease-in-out infinite;
+      }
+      @keyframes journeyStepGlow {
+        0%, 100% { box-shadow: 0 0 0 4px rgba(255,255,255,0.95), 0 0 24px 6px rgba(0, 122, 51, 0.5); }
+        50% { box-shadow: 0 0 0 4px rgba(255,255,255,0.95), 0 0 32px 10px rgba(0, 122, 51, 0.65); }
+      }
+      .journey-fade-in {
+        animation: journeyFadeIn 0.7s ease forwards;
+      }
+      @keyframes journeyFadeIn {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .font-journey { font-family: 'Poppins', system-ui, sans-serif; }
+      .journey-slide {
+        overflow-y: auto;
+        overflow-x: hidden;
+        align-items: flex-start;
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+      }
+      .journey-slide .journey-glass {
+        margin: auto;
+        flex-shrink: 0;
+      }
+      .income-hero-card {
+        width: 100%;
+        max-width: 720px;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15);
+      }
+      .income-hero-card .income-hero-image {
+        aspect-ratio: 16/10;
+        background-size: cover;
+        background-position: center;
+      }
+      .income-hero-card .income-hero-bar {
+        background: #00441f;
+        padding: 1.25rem 1.75rem;
+      }
+      .basic-docs-photo-ring {
+        box-shadow: 0 0 0 4px rgba(255,255,255,0.9), 0 0 0 8px rgba(0,122,51,0.25), 0 0 0 12px rgba(201,161,58,0.2), inset 0 2px 8px rgba(0,0,0,0.06);
+      }
+      .basic-docs-card-frost {
+        background: rgba(255,255,255,0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 8px 32px -8px rgba(0, 68, 31, 0.12), 0 0 0 1px rgba(255,255,255,0.5);
+      }
+      .basic-docs-fab {
+        box-shadow: 0 8px 24px -4px rgba(0, 68, 31, 0.35);
+      }
+      .collateral-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-radius: 18px;
+        box-shadow: 0 22px 55px rgba(0, 0, 0, 0.24);
+      }
+      .supporting-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 999px;
+        box-shadow:
+          0 14px 38px rgba(0, 0, 0, 0.24),
+          0 0 0 1px rgba(255, 255, 255, 0.7);
+      }
+
+      /* Loan calculator premium layout */
+      .loan-calc-shell {
+        max-width: 1120px;
+        border-radius: 32px;
+        background: radial-gradient(circle at 0% 0%, #e8f5e9 0%, #ffffff 32%, #e8f5e9 64%, #0f8a5f 100%);
+        box-shadow:
+          0 26px 80px rgba(0, 0, 0, 0.28),
+          0 0 0 1px rgba(255, 255, 255, 0.75);
+        position: relative;
+        overflow: hidden;
+      }
+      .loan-calc-shell::before {
+        content: '';
+        position: absolute;
+        inset: -40%;
+        background:
+          radial-gradient(circle at 0% 0%, rgba(76, 175, 80, 0.35), transparent 55%),
+          radial-gradient(circle at 100% 100%, rgba(0, 102, 51, 0.45), transparent 55%);
+        opacity: 0.85;
+        pointer-events: none;
+      }
+      .loan-calc-inner {
+        position: relative;
+        padding: 2.25rem 2.5rem 2.25rem;
+      }
+      @media (max-width: 900px) {
+        .loan-calc-inner {
+          padding: 1.75rem 1.5rem 1.75rem;
+        }
+      }
+      .loan-calc-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.1fr);
+        gap: 1.5rem;
+      }
+      @media (max-width: 900px) {
+        .loan-calc-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .loan-calc-card {
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+      }
+      .loan-calc-card-header {
+        border-radius: 22px 22px 0 0;
+        background: linear-gradient(135deg, #006633, #0f8a5f);
+        padding: 0.75rem 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .loan-calc-card-header.secondary {
+        background: linear-gradient(135deg, #0f8a5f, #4CAF50);
+      }
+      .loan-calc-pill {
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 0.22rem 0.7rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .loan-calc-card-body {
+        padding: 1.1rem 1.4rem 1.35rem;
+      }
+      .loan-calc-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #607d8b;
+      }
+      .loan-calc-input {
+        margin-top: 0.35rem;
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid #cfd8dc;
+        background: #ffffff;
+        padding: 0.55rem 0.9rem;
+        font-size: 0.8rem;
+        color: #1f2933;
+      }
+      .loan-calc-input:focus {
+        outline: none;
+        border-color: #0f8a5f;
+        box-shadow: 0 0 0 1.5px rgba(15, 138, 95, 0.35);
+      }
+      .loan-calc-button {
+        border-radius: 999px;
+        background: linear-gradient(135deg, #0f8a5f, #006633);
+        color: #ffffff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.65rem 1.7rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        box-shadow: 0 14px 30px rgba(0, 102, 51, 0.5);
+      }
+      .loan-calc-button-secondary {
+        background: #ffffff;
+        color: #065f46;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+      }
+      .loan-calc-chip {
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.7rem;
+        background: rgba(15, 138, 95, 0.08);
+        color: #0f8a5f;
+        font-weight: 600;
+      }
+      .loan-calc-result-card {
+        border-radius: 18px;
+        padding: 0.8rem 1rem;
+        background: linear-gradient(135deg, #ffffff, #e8f5e9);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+      }
+      .loan-calc-result-label {
+        font-size: 0.75rem;
+        color: #546e7a;
+      }
+      .loan-calc-result-value {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #006633;
+      }
+
+      /* Global animated green-white gradient background */
+      .landbank-animated-bg {
+        position: relative;
+        overflow: hidden;
+      }
+      .landbank-animated-bg::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -3;
+        background: linear-gradient(90deg, #006633, #0f8a5f, #4CAF50, #e8f5e9, #ffffff, #e8f5e9);
+        background-size: 300% 100%;
+        animation: landbankHorizontalFlow 14s ease-in-out infinite alternate;
+      }
+      .landbank-animated-bg::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -4;
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        background: rgba(255, 255, 255, 0.0);
+        opacity: 0.85;
+        pointer-events: none;
+      }
+      @keyframes landbankHorizontalFlow {
+        0% { background-position: 100% 0%; }
+        100% { background-position: 0% 0%; }
+      }
+      #goldDustCanvas {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+      }
+      .presentation-logo {
+        position: fixed;
+        top: 0.9rem;
+        left: 1.1rem;
+        z-index: 40;
+        height: 44px;
+        width: auto;
+        display: none;
+      }
+      .presentation-mode .presentation-logo {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen text-slate-900 landbank-animated-bg">
+    <canvas id="goldDustCanvas"></canvas>
+    <img src="assets/landbank-logo.png" alt="LandBank" class="presentation-logo" />
+    <div class="min-h-screen flex flex-col">
+      <header class="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-emerald-900/5 shadow-sm">
+        <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+          <div class="flex items-center gap-3">
+            <img src="assets/landbank-logo.png" alt="LandBank" class="h-11 w-auto" />
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-widest text-emerald-700">LANDBANK</p>
+              <p class="text-xs font-medium text-slate-800">Home Loan Requirements</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="presentationToggle" type="button" class="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-[11px] font-medium text-emerald-800 hover:bg-emerald-50 transition">
+              Presentation Mode
+            </button>
+            <a href="index.html#services" class="hidden sm:inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-medium text-emerald-800 hover:bg-emerald-100 transition">← Back</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Close / Exit Presentation – top right, subtle border, X icon (visible in presentation mode) -->
+      <button
+        id="exitPresentationBtn"
+        type="button"
+        class="fixed top-4 right-4 z-[100] inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white/95 px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-400 transition"
+        aria-label="Close / Exit Presentation"
+      >
+        <span class="text-base leading-none" aria-hidden="true">×</span>
+        <span>Close</span>
+      </button>
+
+      <main class="flex-1 relative">
+        <div id="slidesViewport" class="slides-viewport h-screen">
+          <div id="slidesTrack" class="slides-track">
+          <!-- Slide 1 – Title: Split layout (image left, white panel right) -->
+          <section class="slide flex flex-row overflow-hidden" data-slide="0">
+            <!-- Left: Hero image (abstract gradient, no house) -->
+            <div
+              id="heroImageParallax"
+              class="split-image-left relative h-full min-h-0 w-[48%] min-w-[45%] flex-shrink-0 bg-gradient-to-br from-emerald-900 via-slate-900 to-emerald-950 bg-cover bg-center slide-animate-image overflow-hidden"
+            >
+              <div class="absolute bottom-0 left-0 h-0 w-0 border-b-[100px] border-l-[100px] border-b-emerald-500/20 border-l-transparent" style="border-style: solid;"></div>
+              <div class="float-shape absolute rounded-full bg-white/5 w-64 h-64 -bottom-20 -right-20" aria-hidden="true"></div>
+              <div class="float-shape absolute rounded-full bg-emerald-400/5 w-40 h-40 top-1/4 -left-10" aria-hidden="true"></div>
+              <div class="float-shape absolute rounded-lg bg-white/5 w-32 h-32 bottom-1/3 right-1/4 rotate-12" aria-hidden="true"></div>
+            </div>
+
+            <!-- Right: Clean white panel -->
+            <div class="split-content-right relative flex h-full flex-1 flex-col justify-center bg-white px-8 py-12 pl-[14%] pr-14 shadow-2xl sm:px-12 sm:pl-[16%] lg:pl-[18%] slide-animate-hero-text">
+              <p class="text-xs font-semibold uppercase tracking-[0.32em] text-landbank-green slide-animate-title">LANDBANK HOME LOAN</p>
+              <h1 class="mt-4 font-sans text-3xl font-bold tracking-tight text-navy sm:text-4xl lg:text-5xl xl:text-[2.75rem] slide-animate-title">
+                HOME LOAN<br />REQUIREMENTS
+              </h1>
+              <p class="mt-2 text-base font-medium text-slate-600 slide-animate-desc">LandBank Home Loan Presentation</p>
+              <p class="mt-5 max-w-md text-sm leading-relaxed text-slate-400 slide-animate-desc">
+                A professional presentation guide for explaining home loan requirements to individual
+                borrowers and families. Use the arrows or dots on the right to navigate.
+              </p>
+            </div>
+          </section>
+
+          <!-- Slide 2 – Loan Application Journey (premium PROCESS TIMELINE) -->
+          <section class="slide journey-slide flex items-center justify-center px-4 py-8 sm:px-6 sm:py-10 font-journey" data-slide="1">
+            <div class="journey-glass slide-inner mx-auto w-full max-w-5xl px-6 py-8 sm:px-10 sm:py-10 journey-fade-in text-center">
+              <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 slide-animate-title">Loan Application Journey</h2>
+              <p class="mt-2 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto slide-animate-desc">A simple and guided process to help you secure your home loan smoothly and confidently.</p>
+              <p class="mt-4 inline-flex items-center gap-2 text-xs sm:text-sm text-emerald-700 bg-emerald-50/80 rounded-full px-3 py-1.5 slide-animate-desc">
+                <span aria-hidden="true">🕐</span>
+                Processing Time: 5–7 Banking Days
+              </p>
+
+              <div class="slide-animate-cards">
+              <!-- Horizontal step progress tracker -->
+              <div class="mt-8 sm:mt-10 flex flex-col items-center">
+                <div class="flex items-center justify-between w-full max-w-2xl gap-2">
+                  <div class="journey-step-circle active">1</div>
+                  <div class="journey-timeline-line flex-1 min-w-[6px]"></div>
+                  <div class="journey-step-circle done">2</div>
+                  <div class="journey-timeline-line flex-1 min-w-[6px]"></div>
+                  <div class="journey-step-circle done">3</div>
+                  <div class="journey-timeline-line flex-1 min-w-[6px]"></div>
+                  <div class="journey-step-circle done">4</div>
+                  <div class="journey-timeline-line flex-1 min-w-[6px]"></div>
+                  <div class="journey-step-circle pending">5</div>
+                </div>
+              </div>
+
+              <!-- 5 step cards (glass, below timeline) -->
+              <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-3">
+                <div class="journey-card p-4 sm:p-5">
+                  <div class="journey-card-icon flex h-12 w-12 items-center justify-center rounded-xl text-xl">📄</div>
+                  <h3 class="mt-3 text-sm font-bold text-slate-900">Submit Application</h3>
+                  <p class="mt-1 text-xs text-slate-600 leading-snug">Forms and initial documents</p>
+                </div>
+                <div class="journey-card p-4 sm:p-5">
+                  <div class="journey-card-icon flex h-12 w-12 items-center justify-center rounded-xl text-xl">✓</div>
+                  <h3 class="mt-3 text-sm font-bold text-slate-900">Document Check</h3>
+                  <p class="mt-1 text-xs text-slate-600 leading-snug">Validation of IDs and papers</p>
+                </div>
+                <div class="journey-card p-4 sm:p-5">
+                  <div class="journey-card-icon flex h-12 w-12 items-center justify-center rounded-xl text-xl">📊</div>
+                  <h3 class="mt-3 text-sm font-bold text-slate-900">Loan Evaluation</h3>
+                  <p class="mt-1 text-xs text-slate-600 leading-snug">Credit and collateral review</p>
+                </div>
+                <div class="journey-card p-4 sm:p-5">
+                  <div class="journey-card-icon flex h-12 w-12 items-center justify-center rounded-xl text-xl">🛡</div>
+                  <h3 class="mt-3 text-sm font-bold text-slate-900">Loan Approval</h3>
+                  <p class="mt-1 text-xs text-slate-600 leading-snug">Terms confirmed with client</p>
+                </div>
+                <div class="journey-card p-4 sm:p-5">
+                  <div class="journey-card-icon flex h-12 w-12 items-center justify-center rounded-xl text-xl">💰</div>
+                  <h3 class="mt-3 text-sm font-bold text-slate-900">Loan Release</h3>
+                  <p class="mt-1 text-xs text-slate-600 leading-snug">Proceeds released</p>
+                </div>
+              </div>
+
+              <!-- Bottom CTA -->
+              <div class="mt-8 sm:mt-10 flex justify-center">
+                <button type="button" class="journey-cta rounded-2xl px-8 py-3.5 text-base font-semibold text-white border-0">Apply Now</button>
+              </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Slide 3 – Basic Documents (modern banking UI) -->
+          <section class="slide relative flex items-center justify-center px-6 py-8 sm:py-10 overflow-hidden" data-slide="2">
+            <div class="slide-inner relative z-10 mx-auto w-full max-w-5xl flex flex-col items-center">
+              <!-- Applicant Profile label -->
+              <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-600 slide-animate-title">Applicant Profile</p>
+              <!-- Circular photo frame with metallic/green ring -->
+              <div class="mt-3 relative slide-animate-image">
+                <div class="basic-docs-photo-ring w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-50/80 flex items-center justify-center border border-white/80">
+                  <span class="text-4xl sm:text-5xl opacity-90">👨‍👩‍👧</span>
+                </div>
+              </div>
+              <!-- Connecting path: circle → three cards (SVG) -->
+              <svg class="absolute left-1/2 -translate-x-1/2 top-[11rem] sm:top-[12.5rem] w-full max-w-2xl h-16 sm:h-20 pointer-events-none hidden sm:block" viewBox="0 0 400 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M200 0 V32 M200 32 L70 80 M200 32 L200 80 M200 32 L330 80" stroke="rgba(0,122,51,0.4)" stroke-width="1.5" stroke-dasharray="5 4"/>
+              </svg>
+              <!-- Main title & subtitle -->
+              <h2 class="mt-6 sm:mt-8 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 slide-animate-title">Basic Documents</h2>
+              <p class="mt-1 text-sm text-slate-500 slide-animate-desc">Core identification and onboarding forms for all applicants.</p>
+
+              <!-- Three-card row (frosted glass) -->
+              <div class="mt-6 sm:mt-8 grid gap-4 sm:grid-cols-3 w-full max-w-4xl slide-animate-cards">
+                <div class="card-hover basic-docs-card-frost rounded-2xl p-5 sm:p-6 border border-white/60">
+                  <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-pink-100 text-2xl">📄</div>
+                  <h3 class="mt-4 text-base font-bold text-slate-800">Application &amp; KYC</h3>
+                  <ul class="mt-3 space-y-1.5 text-sm text-slate-600 list-none">
+                    <li>• Completed Application Form</li>
+                    <li>• Customer Information Sheet (CIS)</li>
+                    <li>• Data Privacy Consent</li>
+                    <li>• 1x1 photo</li>
+                  </ul>
+                </div>
+                <div class="card-hover basic-docs-card-frost rounded-2xl p-5 sm:p-6 border border-white/60">
+                  <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-2xl">🪪</div>
+                  <h3 class="mt-4 text-base font-bold text-slate-800">Identity &amp; Status</h3>
+                  <ul class="mt-3 space-y-1.5 text-sm text-slate-600 list-none">
+                    <li>• Two valid government ID's</li>
+                    <li>• Civil status documents</li>
+                    <li>• Marriage / Birth Cert. / CENOMAR</li>
+                  </ul>
+                </div>
+                <div class="card-hover basic-docs-card-frost rounded-2xl p-5 sm:p-6 border border-white/60">
+                  <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-2xl">🏠</div>
+                  <h3 class="mt-4 text-base font-bold text-slate-800">Proof of Billing</h3>
+                  <ul class="mt-3 space-y-1.5 text-sm text-slate-600 list-none">
+                    <li>• At least two utility bills</li>
+                    <li>• Meralco, water, telecom, etc.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide-specific footer (system-style watermark) -->
+            <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-slate-400/70 pointer-events-none z-10">
+              <span class="flex items-center gap-1">Activate Now</span>
+              <span>Activate Windows - Go to Settings to activate Windows.</span>
+            </div>
+          </section>
+
+          <!-- Slide 4 – Income Requirements (cards only) -->
+          <section class="slide flex min-h-full flex-row items-center justify-center overflow-hidden px-4 sm:px-6 py-8" data-slide="3">
+            <!-- Income requirement details -->
+            <div class="flex-1 max-w-2xl slide-animate-cards">
+              <p class="text-sm font-bold uppercase tracking-[0.2em] text-landbank-green slide-animate-title">Income</p>
+              <h2 class="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl slide-animate-title">
+                INCOME REQUIREMENTS
+              </h2>
+              <p class="mt-1 text-sm text-slate-600 slide-animate-desc">By Employment Type</p>
+
+              <div class="mt-6 space-y-4">
+                <div class="card-hover flex gap-4 rounded-2xl border border-emerald-100 bg-white p-5 shadow-md">
+                  <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-xl text-landbank-green">
+                    💼
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-bold text-landbank-green">Locally Employed</p>
+                    <ul class="mt-2 space-y-1 text-sm text-slate-700">
+                      <li class="flex items-start gap-2"><span class="text-slate-400">•</span> ITR</li>
+                      <li class="flex items-start gap-2"><span class="text-slate-400">•</span> COE and 3 months payslips</li>
+                      <li class="flex items-start gap-2"><span class="text-slate-400">•</span> SALN (gov't employees)</li>
+                      <li class="flex items-start gap-2"><span class="text-slate-400">•</span> Authority for income verification</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="card-hover flex gap-4 rounded-2xl border border-emerald-100 bg-white p-5 shadow-md">
+                  <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-xl text-landbank-green">
+                    🌐
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-bold text-slate-800">OFW</p>
+                    <ul class="mt-2 space-y-1 text-sm text-slate-700">
+                      <li class="flex items-start gap-2"><span class="text-emerald-600">✓</span> Employment contract</li>
+                      <li class="flex items-start gap-2"><span class="text-emerald-600">✓</span> Latest 3 months payslips</li>
+                      <li class="flex items-start gap-2"><span class="text-emerald-600">✓</span> SPA / Irrevocable SPA (LandBank format)</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="card-hover flex gap-4 rounded-2xl border border-emerald-100 bg-white p-5 shadow-md">
+                  <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-xl text-landbank-green">
+                    🏢
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-bold text-slate-800">Self-Employed</p>
+                    <ul class="mt-2 space-y-1 text-sm text-slate-700">
+                      <li class="flex items-start gap-2"><span class="text-emerald-600">✓</span> SEC or DTI Mayor's Permit</li>
+                      <li class="flex items-start gap-2"><span class="text-emerald-600">✓</span> BIR financial statements (3 years)</li>
+                      <li class="flex items-start gap-2"><span class="text-emerald-600">✓</span> Lease contracts if applicable</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Slide 5 – Collateral (hero background with frosted cards) -->
+          <section class="slide relative flex items-center justify-center px-6 py-12" data-slide="4">
+            <div class="absolute inset-0 bg-gradient-to-b from-emerald-900/45 via-emerald-900/35 to-emerald-900/55 mix-blend-multiply pointer-events-none"></div>
+            <div class="relative slide-inner mx-auto w-full max-w-6xl text-white">
+              <div class="flex flex-col gap-2 slide-animate-title">
+                <p class="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-100">Property</p>
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Collateral Requirements</h2>
+                <p class="mt-1 text-sm text-emerald-50/90 slide-animate-desc">Documents for the property offered as security.</p>
+              </div>
+
+              <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-2 slide-animate-cards">
+                <div class="collateral-card card-hover flex items-start gap-4 p-5">
+                  <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-100/95 text-lg text-emerald-900 shadow-md">📑</div>
+                  <div>
+                    <h3 class="font-semibold text-emerald-950">Title &amp; Tax</h3>
+                    <p class="text-xs text-emerald-900/80 mt-1">TCT/CCT, tax declarations, tax receipts, tax clearance</p>
+                  </div>
+                </div>
+                <div class="collateral-card card-hover flex items-start gap-4 p-5">
+                  <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-100/95 text-lg text-emerald-900 shadow-md">🗺️</div>
+                  <div>
+                    <h3 class="font-semibold text-emerald-950">Plans &amp; Map</h3>
+                    <p class="text-xs text-emerald-900/80 mt-1">Certified lot plan, location &amp; vicinity map</p>
+                  </div>
+                </div>
+                <div class="collateral-card card-hover flex items-start gap-4 p-5">
+                  <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-100/95 text-lg text-emerald-900 shadow-md">📷</div>
+                  <div>
+                    <h3 class="font-semibold text-emerald-950">Photos</h3>
+                    <p class="text-xs text-emerald-900/80 mt-1">Updated photos of the offered collateral</p>
+                  </div>
+                </div>
+                <div class="collateral-card card-hover flex items-start gap-4 p-5">
+                  <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-100/95 text-lg text-emerald-900 shadow-md">🏢</div>
+                  <div>
+                    <h3 class="font-semibold text-emerald-950">Condo (if any)</h3>
+                    <p class="text-xs text-emerald-900/80 mt-1">Diagrammatic plan, Master Deed of Restrictions</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Slide 5 – Additional Supporting Documents (hero background with stacked pills) -->
+          <section class="slide relative flex items-center justify-center px-6 py-12" data-slide="4">
+            <div class="absolute inset-0 bg-gradient-to-b from-emerald-900/40 via-emerald-900/30 to-emerald-900/55 mix-blend-multiply pointer-events-none"></div>
+            <div class="relative slide-inner mx-auto w-full max-w-5xl text-white">
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-100 slide-animate-title">Supporting</p>
+              <h2 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl slide-animate-title">Additional Supporting Documents</h2>
+              <p class="mt-2 text-sm text-emerald-50/90 slide-animate-desc">As required by project type or loan purpose.</p>
+
+              <div class="mt-8 space-y-4 slide-animate-cards">
+                <div class="supporting-card card-hover flex items-center gap-5 px-6 py-4">
+                  <span class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-700 text-white text-sm font-bold shadow-md">1</span>
+                  <div class="flex-1">
+                    <p class="font-semibold text-emerald-950">Contracts &amp; Statements</p>
+                    <p class="text-sm text-emerald-900/80">Contract to Sell, reservation agreement, latest SOA, proof of other income</p>
+                  </div>
+                </div>
+                <div class="supporting-card card-hover flex items-center gap-5 px-6 py-4">
+                  <span class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-700 text-white text-sm font-bold shadow-md">2</span>
+                  <div class="flex-1">
+                    <p class="font-semibold text-emerald-950">Construction &amp; Renovation</p>
+                    <p class="text-sm text-emerald-900/80">Building plans, permits, bills of materials and cost estimates</p>
+                  </div>
+                </div>
+                <div class="supporting-card card-hover flex items-center gap-5 px-6 py-4">
+                  <span class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-700 text-white text-sm font-bold shadow-md">3</span>
+                  <div class="flex-1">
+                    <p class="font-semibold text-emerald-950">Other Assets</p>
+                    <p class="text-sm text-emerald-900/80">OR/CR of vehicles, any additional documents per credit evaluation</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Slide 6 – Loan Calculator (premium layout) -->
+          <section class="slide flex items-center justify-center px-6 py-12" data-slide="5">
+            <div class="slide-inner loan-calc-shell">
+              <div class="loan-calc-inner">
+                <p class="text-xs font-semibold uppercase tracking-[0.26em] text-emerald-900/80 slide-animate-title">LandBank Home Loan</p>
+                <h2 class="mt-1 text-3xl font-bold tracking-tight text-emerald-900 sm:text-4xl slide-animate-title">Loan Calculator</h2>
+                <p class="mt-1 text-sm text-emerald-900/80 slide-animate-desc">Estimate your monthly home loan payment.</p>
+
+                <div class="mt-6 loan-calc-grid slide-animate-cards">
+                  <!-- Left: Loan Information -->
+                  <div class="loan-calc-card">
+                    <div class="loan-calc-card-header">
+                      <div class="h-7 w-7 rounded-full bg-white/15 flex items-center justify-center text-white text-sm">₱</div>
+                      <div class="text-white">
+                        <p class="text-[11px] uppercase tracking-[0.22em] opacity-80">Loan Information</p>
+                        <p class="text-sm font-semibold leading-tight">Your Loan Details</p>
+                      </div>
+                    </div>
+                    <div class="loan-calc-card-body space-y-3.5 text-sm">
+                      <div>
+                        <label for="calcAmount" class="loan-calc-label">Loan Amount (₱)</label>
+                        <input id="calcAmount" type="number" min="0" step="1000" placeholder="e.g. 1500000" class="loan-calc-input" />
+                      </div>
+                      <div class="grid grid-cols-2 gap-3">
+                        <div>
+                          <label for="calcRate" class="loan-calc-label">Interest Rate (% per year)</label>
+                          <input id="calcRate" type="number" min="0" step="0.01" placeholder="e.g. 6" class="loan-calc-input" />
+                        </div>
+                        <div>
+                          <label for="calcTerm" class="loan-calc-label">Loan Term (years)</label>
+                          <input id="calcTerm" type="number" min="1" step="1" placeholder="e.g. 10" class="loan-calc-input" />
+                        </div>
+                      </div>
+
+                      <div class="flex flex-wrap items-center gap-3 pt-1">
+                        <button id="calcCalculate" type="button" class="loan-calc-button">
+                          Calculate Payment
+                        </button>
+                        <button id="calcReset" type="button" class="loan-calc-button loan-calc-button-secondary">
+                          Clear
+                        </button>
+                        <span class="loan-calc-chip">Based on fixed rate &amp; monthly payments</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Right: Estimated Results -->
+                  <div class="loan-calc-card">
+                    <div class="loan-calc-card-header secondary">
+                      <div class="h-7 w-7 rounded-full bg-white/15 flex items-center justify-center text-white text-sm">≡</div>
+                      <div class="text-white">
+                        <p class="text-[11px] uppercase tracking-[0.22em] opacity-80">Estimated Results</p>
+                        <p class="text-sm font-semibold leading-tight">Payment Summary</p>
+                      </div>
+                    </div>
+                    <div class="loan-calc-card-body space-y-3.5 text-sm">
+                      <div class="grid gap-2.5">
+                        <div class="loan-calc-result-card">
+                          <p class="loan-calc-result-label">Monthly Payment</p>
+                          <p id="calcMonthly" class="loan-calc-result-value mt-0.5">—</p>
+                        </div>
+                        <div class="loan-calc-result-card">
+                          <p class="loan-calc-result-label">Total Payment</p>
+                          <p id="calcTotal" class="loan-calc-result-value mt-0.5">—</p>
+                        </div>
+                        <div class="loan-calc-result-card">
+                          <p class="loan-calc-result-label">Total Interest</p>
+                          <p id="calcInterest" class="loan-calc-result-value mt-0.5">—</p>
+                        </div>
+                      </div>
+
+                      <div class="mt-2 grid gap-3 items-start sm:grid-cols-[1.2fr,1fr]">
+                        <div class="text-xs text-emerald-950/85 space-y-1.5">
+                          <p class="font-semibold uppercase tracking-[0.16em] text-emerald-900/90">Payment Breakdown</p>
+                          <div class="flex items-center justify-between">
+                            <span class="text-emerald-800">Principal</span>
+                            <span class="font-semibold text-emerald-900" data-calc-principal>—</span>
+                          </div>
+                          <div class="flex items-center justify-between">
+                            <span class="text-emerald-800">Interest</span>
+                            <span class="font-semibold text-amber-700" data-calc-interest>—</span>
+                          </div>
+                          <p class="text-[10px] text-emerald-900/70 pt-1">Values are for illustration. Update inputs for your client scenario.</p>
+                        </div>
+                        <div class="h-28 sm:h-32">
+                          <canvas id="slideCalcChart"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Slide 8 – Call to Action -->
+          <section class="slide flex items-center justify-center px-6 py-12" data-slide="7">
+            <div class="slide-inner mx-auto max-w-4xl rounded-[28px] border border-white/10 bg-emerald-950/40 px-8 py-10 shadow-2xl backdrop-blur sm:px-12">
+              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-200 slide-animate-title">Next Steps</p>
+              <h2 class="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl slide-animate-title">Ready to move forward?</h2>
+              <p class="mt-3 max-w-xl text-sm text-emerald-100/90 slide-animate-desc">Close your presentation by inviting clients to take the next step.</p>
+              <div class="mt-6 flex flex-wrap gap-3 slide-animate-cards">
+                <button type="button" class="rounded-full bg-gradient-to-r from-landbank-green to-landbank-dark px-6 py-3 text-sm font-semibold text-white shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition">Apply Now</button>
+                <button type="button" class="rounded-full border border-emerald-200 bg-emerald-50/10 px-5 py-3 text-sm font-medium text-emerald-50 hover:bg-emerald-50/20 transition">Talk to a Loan Officer</button>
+              </div>
+            </div>
+          </section>
+          </div>
+        </div>
+
+        <!-- Right-side navigation -->
+        <div class="pointer-events-none absolute inset-y-0 right-3 top-0 flex flex-col items-center justify-center gap-3 z-30">
+          <button id="slidePrev" type="button" class="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/95 border border-emerald-200 text-emerald-700 shadow-lg hover:bg-emerald-50 transition" aria-label="Previous">‹</button>
+          <div id="slideDots" class="pointer-events-auto flex flex-col gap-2"></div>
+          <button id="slideNext" type="button" class="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/95 border border-emerald-200 text-emerald-700 shadow-lg hover:bg-emerald-50 transition" aria-label="Next">›</button>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const viewport = document.getElementById('slidesViewport');
+        const track = document.getElementById('slidesTrack');
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        const prevBtn = document.getElementById('slidePrev');
+        const nextBtn = document.getElementById('slideNext');
+        const dotsContainer = document.getElementById('slideDots');
+        const presentationToggle = document.getElementById('presentationToggle');
+
+        if (!viewport || !track || !slides.length) return;
+
+        let currentIndex = 0;
+        let isAnimating = false;
+        const DURATION = 1.25;
+        const EASE = 'power3.out';
+
+        function getSlideWidth() { return viewport.clientWidth; }
+        function getSlideX() { return -currentIndex * getSlideWidth(); }
+
+        // Dots
+        slides.forEach((_, i) => {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'slide-dot h-2.5 w-2.5 rounded-full border border-emerald-300 bg-emerald-100/50 hover:bg-emerald-300 transition-all duration-300';
+          dot.dataset.index = String(i);
+          dot.addEventListener('click', () => goToSlide(i));
+          dotsContainer.appendChild(dot);
+        });
+        const dots = dotsContainer.querySelectorAll('.slide-dot');
+
+        function updateDots() {
+          dots.forEach((d, i) => {
+            d.classList.toggle('bg-landbank-green', i === currentIndex);
+            d.classList.toggle('border-landbank-green', i === currentIndex);
+            gsap.to(d, { scale: i === currentIndex ? 1.35 : 1, duration: 0.35, ease: 'power2.out' });
+          });
+        }
+
+        function animateSlideIn(slide, direction) {
+          const isRtl = direction === 'next';
+          slide.classList.add('slide-entered');
+
+          const titles = slide.querySelectorAll('.slide-animate-title');
+          const descs = slide.querySelectorAll('.slide-animate-desc');
+          const images = slide.querySelectorAll('.slide-animate-image');
+          const cardContainers = slide.querySelectorAll('.slide-animate-cards');
+          const heroTexts = slide.querySelectorAll('.slide-animate-hero-text');
+
+          gsap.set(titles, { y: 36, opacity: 0 });
+          gsap.set(descs, { opacity: 0 });
+          gsap.set(images, { scale: 0.92, opacity: 0 });
+          if (cardContainers.length) gsap.set(cardContainers[0].children, { y: 24, opacity: 0 });
+          if (heroTexts.length) gsap.set(heroTexts[0].children, { y: 20, opacity: 0 });
+
+          const tl = gsap.timeline({ defaults: { ease: EASE, duration: 1.05 } });
+          tl.to(titles, { y: 0, opacity: 1, duration: 1.0, stagger: 0.08 })
+            .to(descs, { opacity: 1, duration: 0.6 }, '-=0.6')
+            .to(images, { scale: 1, opacity: 1, duration: 1.2 }, '-=0.9');
+          if (cardContainers.length && cardContainers[0].children.length) {
+            tl.to(cardContainers[0].children, { y: 0, opacity: 1, duration: 0.5, stagger: 0.08 }, '-=0.5');
+          }
+          if (heroTexts.length && heroTexts[0].children.length) {
+            tl.to(heroTexts[0].children, { y: 0, opacity: 1, duration: 0.5, stagger: 0.07 }, '-=0.7');
+          }
+        }
+
+        function goToSlide(index, direction) {
+          if (index < 0 || index >= slides.length || isAnimating) return;
+          const prevIndex = currentIndex;
+          currentIndex = index;
+          isAnimating = true;
+
+          const x = getSlideX();
+          gsap.to(track, {
+            x,
+            duration: DURATION,
+            ease: EASE,
+            onComplete: () => {
+              isAnimating = false;
+              updateDots();
+              animateSlideIn(slides[currentIndex], direction || (index > prevIndex ? 'next' : 'prev'));
+            }
+          });
+
+          updateDots();
+        }
+
+        // Initial: show first slide, animate it in only when we "enter" it (on load counts as enter)
+        gsap.set(track, { x: 0 });
+        slides.forEach(s => s.classList.remove('slide-entered'));
+        animateSlideIn(slides[0], 'next');
+        updateDots();
+
+        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1, 'prev'));
+        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1, 'next'));
+
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentIndex + 1, 'next'); }
+          else if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentIndex - 1, 'prev'); }
+        });
+
+        let wheelTimeout = null;
+        viewport.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          if (wheelTimeout || isAnimating) return;
+          if (e.deltaY > 0) goToSlide(currentIndex + 1, 'next');
+          else if (e.deltaY < 0) goToSlide(currentIndex - 1, 'prev');
+          wheelTimeout = setTimeout(() => { wheelTimeout = null; }, 600);
+        }, { passive: false });
+
+        function setPresentationMode(on) {
+          document.body.classList.toggle('presentation-mode', on);
+          try {
+            if (on) document.documentElement.requestFullscreen();
+            else if (document.fullscreenElement) document.exitFullscreen();
+          } catch (_) {}
+        }
+
+        presentationToggle.addEventListener('click', () => {
+          setPresentationMode(!document.body.classList.contains('presentation-mode'));
+        });
+
+        document.getElementById('exitPresentationBtn').addEventListener('click', () => setPresentationMode(false));
+
+        // Parallax and floating shapes on hero (slide 0)
+        const heroImg = document.getElementById('heroImageParallax');
+        if (heroImg) {
+          gsap.to(heroImg, {
+            backgroundPosition: '50% 48%',
+            duration: 25,
+            repeat: -1,
+            yoyo: true,
+            ease: 'none'
+          });
+          heroImg.querySelectorAll('.float-shape').forEach((el, i) => {
+            gsap.to(el, {
+              y: (i % 2 === 0 ? 15 : -12) + 'px',
+              x: (i === 0 ? -10 : 8) + 'px',
+              duration: 4 + i * 1.5,
+              repeat: -1,
+              yoyo: true,
+              ease: 'sine.inOut'
+            });
+          });
+        }
+
+        window.addEventListener('resize', () => {
+          gsap.set(track, { x: getSlideX() });
+        });
+
+        // Gold dust particle background
+        (function initGoldDust() {
+          const canvas = document.getElementById('goldDustCanvas');
+          if (!canvas || !canvas.getContext) return;
+          const ctx = canvas.getContext('2d');
+          let width = window.innerWidth;
+          let height = window.innerHeight;
+          canvas.width = width;
+          canvas.height = height;
+
+          const colors = ['#FFD700', '#f6c453', '#e6b800', '#f4d03f'];
+          const particles = [];
+          const PARTICLE_COUNT = 80;
+
+          for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push({
+              x: Math.random() * width,
+              y: Math.random() * height,
+              r: 1 + Math.random() * 2,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              baseAlpha: 0.2 + Math.random() * 0.15,
+              twinkleAmp: 0.08 + Math.random() * 0.07,
+              phase: Math.random() * Math.PI * 2,
+              speedX: (Math.random() - 0.5) * 0.05,
+              speedY: -0.02 + Math.random() * 0.05
+            });
+          }
+
+          function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+          }
+          window.addEventListener('resize', resizeCanvas);
+
+          function draw() {
+            ctx.clearRect(0, 0, width, height);
+            const time = performance.now() / 1000;
+            for (const p of particles) {
+              p.x += p.speedX;
+              p.y += p.speedY;
+              if (p.x < -5) p.x = width + 5;
+              if (p.x > width + 5) p.x = -5;
+              if (p.y < -5) p.y = height + 5;
+              if (p.y > height + 5) p.y = -5;
+
+              const alpha = p.baseAlpha + Math.sin(time * 0.8 + p.phase) * p.twinkleAmp;
+              ctx.globalAlpha = Math.max(0, Math.min(0.45, alpha));
+              const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.5);
+              grd.addColorStop(0, p.color);
+              grd.addColorStop(1, 'rgba(0,0,0,0)');
+              ctx.fillStyle = grd;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.r * 2.5, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(draw);
+          }
+          draw();
+        })();
+
+
+        // Loan calculator on Slide 7
+        const amountInput = document.getElementById('calcAmount');
+        const rateInput = document.getElementById('calcRate');
+        const termInput = document.getElementById('calcTerm');
+        const calculateBtn = document.getElementById('calcCalculate');
+        const resetBtn = document.getElementById('calcReset');
+        const monthlyEl = document.getElementById('calcMonthly');
+        const totalEl = document.getElementById('calcTotal');
+        const interestEl = document.getElementById('calcInterest');
+        const chartCanvas = document.getElementById('slideCalcChart');
+        let slideBreakdownChart = null;
+
+        if (amountInput && rateInput && termInput && monthlyEl && totalEl && interestEl) {
+          function formatPhp(v) {
+            if (!isFinite(v)) return '—';
+            return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', maximumFractionDigits: 2 }).format(v);
+          }
+          function compute() {
+            const p = parseFloat(amountInput.value || '0');
+            const r = parseFloat(rateInput.value || '0') / 100 / 12;
+            const n = parseFloat(termInput.value || '0') * 12;
+            if (!p || !r || !n) {
+              monthlyEl.textContent = totalEl.textContent = interestEl.textContent = '—';
+              // Reset Payment Breakdown principal/interest labels
+              const principalLabel = slide.querySelector('[data-calc-principal]');
+              const interestLabel = slide.querySelector('[data-calc-interest]');
+              if (principalLabel) principalLabel.textContent = '—';
+              if (interestLabel) interestLabel.textContent = '—';
+              if (chartCanvas && slideBreakdownChart) {
+                slideBreakdownChart.data.datasets[0].data = [0, 0];
+                slideBreakdownChart.update();
+              }
+              return;
+            }
+            const monthly = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            const total = monthly * n;
+            const interest = total - p;
+            monthlyEl.textContent = formatPhp(monthly);
+            totalEl.textContent = formatPhp(total);
+            interestEl.textContent = formatPhp(interest);
+            const principalLabel = slide.querySelector('[data-calc-principal]');
+            const interestLabel = slide.querySelector('[data-calc-interest]');
+            if (principalLabel) principalLabel.textContent = formatPhp(p);
+            if (interestLabel) interestLabel.textContent = formatPhp(interest);
+
+            if (chartCanvas && typeof Chart !== 'undefined') {
+              if (!slideBreakdownChart) {
+                slideBreakdownChart = new Chart(chartCanvas, {
+                  type: 'doughnut',
+                  data: {
+                    labels: ['Principal', 'Interest'],
+                    datasets: [{
+                      data: [p, interest],
+                      backgroundColor: ['#047857', '#f97316'],
+                      borderWidth: 1,
+                    }],
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: { position: 'bottom', labels: { font: { size: 10 }, color: '#94a3b8' } },
+                    },
+                  },
+                });
+              } else {
+                slideBreakdownChart.data.datasets[0].data = [p, interest];
+                slideBreakdownChart.update();
+              }
+            }
+          }
+          if (calculateBtn) {
+            calculateBtn.addEventListener('click', compute);
+          }
+          if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+              amountInput.value = '';
+              rateInput.value = '';
+              termInput.value = '';
+              compute();
+            });
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

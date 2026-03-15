@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LandBank Small Business Loan (SBL) FAQs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              landbank: {
+                green: '#007a33',
+                dark: '#00441f',
+                gold: '#c9a13a'
+              }
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body.faq-hero-bg {
+        position: relative;
+        overflow: hidden;
+      }
+      body.faq-hero-bg::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -3;
+        background: linear-gradient(90deg, #006633, #0f8a5f, #4CAF50, #e8f5e9, #ffffff, #e8f5e9);
+        background-size: 300% 100%;
+        animation: landbankHorizontalFlow 14s ease-in-out infinite alternate;
+      }
+      body.faq-hero-bg::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        background: rgba(255, 255, 255, 0.0);
+        opacity: 0.9;
+        pointer-events: none;
+      }
+      .faq-shell {
+        border-radius: 32px;
+        padding: 2.4rem 2.6rem 2.6rem;
+        background: rgba(255, 255, 255, 0.90);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow:
+          0 26px 80px rgba(0, 0, 0, 0.35),
+          0 0 0 1px rgba(255, 255, 255, 0.9);
+      }
+      @media (max-width: 768px) {
+        .faq-shell {
+          padding: 1.8rem 1.6rem 2rem;
+        }
+      }
+      #goldDustCanvas {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+      }
+      @keyframes landbankHorizontalFlow {
+        0% { background-position: 100% 0%; }
+        100% { background-position: 0% 0%; }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen text-slate-900 faq-hero-bg">
+    <canvas id="goldDustCanvas"></canvas>
+    <div class="min-h-screen flex flex-col">
+      <!-- Header -->
+      <header
+        class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-emerald-900/5 shadow-sm"
+      >
+        <div
+          class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8"
+        >
+          <div class="flex items-center gap-3">
+            <div class="flex h-12 items-center">
+              <img
+                src="assets/landbank-logo.png"
+                alt="LandBank logo"
+                class="h-12 w-auto object-contain"
+              />
+            </div>
+            <div>
+              <p
+                class="text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-700"
+              >
+                LANDBANK
+              </p>
+              <p class="text-xs font-medium text-slate-800">
+                Small Business Loan (SBL) – FAQs
+              </p>
+            </div>
+          </div>
+          <a
+            href="index.html#services"
+            class="hidden sm:inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-medium text-emerald-800 hover:bg-emerald-100 hover:shadow-md hover:-translate-y-0.5 transition"
+          >
+            ← Back to Loan Services
+          </a>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <main class="flex-1">
+        <section class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+          <div class="faq-shell">
+          <!-- Title -->
+          <div class="max-w-2xl mb-6">
+            <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900">
+              Small Business Loan (SBL) – Frequently Asked Questions
+            </h1>
+            <p class="mt-2 text-xs sm:text-sm text-slate-600">
+              Key questions and answers based on the official
+              <span class="font-semibold">FAQs on SBL</span> annex. Use this during
+              presentations to explain how the facility works. Actual terms and
+              requirements remain subject to updated LandBank policies.
+            </p>
+          </div>
+
+          <!-- Summary chips -->
+          <div
+            class="mb-6 flex flex-wrap gap-2 text-[11px] sm:text-xs text-emerald-900"
+          >
+            <span
+              class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 border border-emerald-100"
+              >Eligibility &amp; Amounts</span
+            >
+            <span
+              class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 border border-emerald-100"
+              >Facilities &amp; Collection</span
+            >
+            <span
+              class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 border border-emerald-100"
+              >Interest &amp; Penalties</span
+            >
+            <span
+              class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 border border-emerald-100"
+              >Submission &amp; Contacts</span
+            >
+          </div>
+
+          <div class="space-y-4" id="faqAccordion">
+            <!-- Eligibility & Loan Amount -->
+            <div
+              class="rounded-3xl bg-white shadow-lg shadow-emerald-900/10 border border-emerald-100 transition hover:-translate-y-1 hover:shadow-xl"
+            >
+              <button
+                type="button"
+                class="flex w-full items-center justify-between px-5 py-4 text-left rounded-3xl hover:bg-slate-50 transition-colors"
+                data-accordion-toggle="faq-eligibility"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"
+                  >
+                    <span class="text-lg">✅</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-900">
+                      Eligibility, Loanable Amount &amp; Facilities
+                    </p>
+                    <p class="text-[11px] text-slate-500">
+                      Who may apply, how much they can borrow, and what
+                      facilities are available.
+                    </p>
+                  </div>
+                </div>
+                <span class="ml-3 text-xs text-slate-500">+</span>
+              </button>
+              <div
+                id="faq-eligibility"
+                class="hidden border-t border-slate-100 px-5 pb-5 pt-3 text-xs text-slate-700 space-y-2"
+              >
+                <p>
+                  <span class="font-semibold">Q: Who is eligible to apply for SBL?</span><br />
+                  A: All existing MSME depositors (single proprietor,
+                  partnership or corporation) with an average daily balance
+                  (ADB) of at least <span class="font-semibold">₱1.50 million</span>
+                  for the last three (3) years may apply, subject to standard
+                  credit evaluation.
+                </p>
+                <p>
+                  <span class="font-semibold">Q: How much is the loanable amount?</span><br />
+                  A: Minimum of <span class="font-semibold">₱1.0 million</span>,
+                  up to 90% of the client’s deposit ADB, but not to exceed
+                  <span class="font-semibold">₱10.0 million</span>.
+                </p>
+                <p>
+                  <span class="font-semibold">Q: What are the available credit facilities?</span
+                  ><br />
+                  A: There are two facilities:
+                  <span class="font-semibold">Revolving Credit Line (RCL)</span>,
+                  a one-year credit line with 90‑day promissory notes; and
+                  <span class="font-semibold">Short‑Term Loan (STL)</span>, a
+                  one‑shot loan payable in three (3) equal monthly
+                  installments.
+                </p>
+                <p>
+                  <span class="font-semibold"
+                    >Q: Can the loan be renewed if the borrower cannot pay on
+                    maturity?</span
+                  ><br />
+                  A: No. There is no PN renewal or roll‑over under SBL. Loans
+                  must be paid on maturity date.
+                </p>
+                <p class="text-[11px] text-slate-500 mt-2">
+                  Reminder: Only existing depositors meeting the minimum ADB
+                  requirement are eligible under SBL.
+                </p>
+              </div>
+            </div>
+
+            <!-- Collection, Collateral & Mode of Payment -->
+            <div
+              class="rounded-3xl bg-white shadow-lg shadow-emerald-900/10 border border-emerald-100 transition hover:-translate-y-1 hover:shadow-xl"
+            >
+              <button
+                type="button"
+                class="flex w-full items-center justify-between px-5 py-4 text-left rounded-3xl hover:bg-slate-50 transition-colors"
+                data-accordion-toggle="faq-collection"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"
+                  >
+                    <span class="text-lg">🏦</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-900">
+                      Mode of Collection, Collateral &amp; Deposit ADB
+                    </p>
+                    <p class="text-[11px] text-slate-500">
+                      How payments are collected and how the deposit account is
+                      treated.
+                    </p>
+                  </div>
+                </div>
+                <span class="ml-3 text-xs text-slate-500">+</span>
+              </button>
+              <div
+                id="faq-collection"
+                class="hidden border-t border-slate-100 px-5 pb-5 pt-3 text-xs text-slate-700 space-y-2"
+              >
+                <p>
+                  <span class="font-semibold">Q: What is the mode of collection?</span><br />
+                  A: Payments are collected via
+                  <span class="font-semibold">Automatic Debit Arrangement (ADA)</span>
+                  on the client’s existing deposit account with LandBank.
+                </p>
+                <p>
+                  <span class="font-semibold"
+                    >Q: What will be the collateral? Will the deposit be put on
+                    hold?</span
+                  ><br />
+                  A: SBL is a <span class="font-semibold">clean / unsecured</span>
+                  loan. The required deposit ADB is not put on hold and the
+                  client may still withdraw, but must maintain the required ADB
+                  equivalent to 100% of the outstanding principal balance.
+                </p>
+                <p>
+                  <span class="font-semibold"
+                    >Q: What happens if there are no available funds at
+                    maturity?</span
+                  ><br />
+                  A: It is important that the required ADB is maintained to
+                  ensure source of repayment. The borrower’s deposit account
+                  will be debited for loan payment.
+                </p>
+                <p>
+                  <span class="font-semibold"
+                    >Q: Is there a factor rate for monthly amortization?</span
+                  ><br />
+                  A: None. For RCL, principal is payable in lump sum at
+                  maturity; for STL, principal is payable in three equal monthly
+                  amortizations with PN term up to 90 days.
+                </p>
+              </div>
+            </div>
+
+            <!-- Interest & Penalties -->
+            <div
+              class="rounded-3xl bg-white shadow-lg shadow-emerald-900/10 border border-emerald-100 transition hover:-translate-y-1 hover:shadow-xl"
+            >
+              <button
+                type="button"
+                class="flex w-full items-center justify-between px-5 py-4 text-left rounded-3xl hover:bg-slate-50 transition-colors"
+                data-accordion-toggle="faq-interest"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"
+                  >
+                    <span class="text-lg">💰</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-900">
+                      Interest, Penalties &amp; Computations
+                    </p>
+                    <p class="text-[11px] text-slate-500">
+                      Reference formulas and typical interest rates.
+                    </p>
+                  </div>
+                </div>
+                <span class="ml-3 text-xs text-slate-500">+</span>
+              </button>
+              <div
+                id="faq-interest"
+                class="hidden border-t border-slate-100 px-5 pb-5 pt-3 text-xs text-slate-700 space-y-2"
+              >
+                <p>
+                  <span class="font-semibold">Q: How much is the interest rate?</span><br />
+                  A: Rates depend on credit scoring. A “low‑risk” score usually
+                  corresponds to about <span class="font-semibold">9% p.a.</span>,
+                  while “normal‑risk” corresponds to about
+                  <span class="font-semibold">10% p.a.</span>
+                </p>
+                <p>
+                  <span class="font-semibold">Q: How is interest computed?</span><br />
+                  A: Interest collected in advance may be computed as:<br />
+                  <span class="font-mono text-[11px]"
+                    >Interest = (Loan amount × applicable rate) × (PN term / 360)</span
+                  >.
+                </p>
+                <p>
+                  <span class="font-semibold">Q: How are penalty charges computed?</span><br />
+                  A: Penalty may be computed as:<br />
+                  <span class="font-mono text-[11px]"
+                    >Penalty = (Unpaid amount × 24%) × (no. of days past due / 360)</span
+                  >, reckoned from the day after maturity up to actual
+                  settlement.
+                </p>
+                <p>
+                  <span class="font-semibold"
+                    >Q: Is cash flow still required if financial statements are
+                    submitted?</span
+                  ><br />
+                  A: No, if FS are sufficient to cover the required debt
+                  service. Otherwise, additional cash‑flow schedules or bank
+                  statements for the last six (6) months may be requested.
+                </p>
+              </div>
+            </div>
+
+            <!-- Submission, Contacts & Other Questions -->
+            <div
+              class="rounded-3xl bg-white shadow-lg shadow-emerald-900/10 border border-emerald-100 transition hover:-translate-y-1 hover:shadow-xl"
+            >
+              <button
+                type="button"
+                class="flex w-full items-center justify-between px-5 py-4 text-left rounded-3xl hover:bg-slate-50 transition-colors"
+                data-accordion-toggle="faq-submission"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"
+                  >
+                    <span class="text-lg">📤</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-900">
+                      Submission, Contacts &amp; Other Clarifications
+                    </p>
+                    <p class="text-[11px] text-slate-500">
+                      How to submit requirements and other important reminders.
+                    </p>
+                  </div>
+                </div>
+                <span class="ml-3 text-xs text-slate-500">+</span>
+              </button>
+              <div
+                id="faq-submission"
+                class="hidden border-t border-slate-100 px-5 pb-5 pt-3 text-xs text-slate-700 space-y-2"
+              >
+                <p>
+                  <span class="font-semibold"
+                    >Q: How and to whom should documentary requirements be
+                    submitted?</span
+                  ><br />
+                  A: Requirements are submitted via Secure File Transfer
+                  Protocol (SFTP) or other designated platforms / email
+                  addresses of SBLD and PCBD units, depending on the branch
+                  location (NCR, Luzon, Visayas or Mindanao).
+                </p>
+                <p>
+                  <span class="font-semibold"
+                    >Q: What are the related fees and charges?</span
+                  ><br />
+                  A: Fees typically include an
+                  <span class="font-semibold">application fee</span> (around
+                  ₱2,000 for loans up to ₱10 million),
+                  <span class="font-semibold">processing / handling fee</span>
+                  (per ₱1.0 million approved), commitment fee on unavailed
+                  amounts, notarial fees and applicable documentary stamp tax
+                  (DST).
+                </p>
+                <p>
+                  <span class="font-semibold"
+                    >Q: What if the depositor or borrower does not meet the
+                    required ADB or minimum loan amount?</span
+                  ><br />
+                  A: If the client does not meet the ₱1.50 million ADB or needs
+                  less than ₱1.0 million, they may instead be referred to other
+                  SME lending units or products outside of SBL.
+                </p>
+                <p>
+                  <span class="font-semibold"
+                    >Q: When can branches start endorsing SBL applications?</span
+                  ><br />
+                  A: Endorsement may begin once the formal SBL guidelines are
+                  released, as indicated in the circular.
+                </p>
+                <p class="text-[11px] text-slate-500 mt-2">
+                  Note: Clients should coordinate with their servicing branch or
+                  relationship officer for the latest contact persons and
+                  submission channels.
+                </p>
+              </div>
+            </div>
+          </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // Gold dust particle background (same feel as presentations)
+      (function initGoldDust() {
+        const canvas = document.getElementById('goldDustCanvas');
+        if (!canvas || !canvas.getContext) return;
+        const ctx = canvas.getContext('2d');
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        const colors = ['#FFD700', '#f6c453', '#e6b800', '#f4d03f'];
+        const particles = [];
+        const PARTICLE_COUNT = 80;
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: 1 + Math.random() * 2,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            baseAlpha: 0.2 + Math.random() * 0.15,
+            twinkleAmp: 0.08 + Math.random() * 0.07,
+            phase: Math.random() * Math.PI * 2,
+            speedX: (Math.random() - 0.5) * 0.05,
+            speedY: -0.02 + Math.random() * 0.05
+          });
+        }
+
+        function resizeCanvas() {
+          width = window.innerWidth;
+          height = window.innerHeight;
+          canvas.width = width;
+          canvas.height = height;
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function draw() {
+          ctx.clearRect(0, 0, width, height);
+          const time = performance.now() / 1000;
+          for (const p of particles) {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            if (p.x < -5) p.x = width + 5;
+            if (p.x > width + 5) p.x = -5;
+            if (p.y < -5) p.y = height + 5;
+            if (p.y > height + 5) p.y = -5;
+
+            const alpha = p.baseAlpha + Math.sin(time * 0.8 + p.phase) * p.twinkleAmp;
+            ctx.globalAlpha = Math.max(0, Math.min(0.45, alpha));
+            const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.5);
+            grd.addColorStop(0, p.color);
+            grd.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grd;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r * 2.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+          requestAnimationFrame(draw);
+        }
+        draw();
+      })();
+
+      // Accordion behaviour
+      document.addEventListener('DOMContentLoaded', () => {
+        const buttons = document.querySelectorAll('[data-accordion-toggle]');
+
+        buttons.forEach((button) => {
+          button.addEventListener('click', () => {
+            const id = button.getAttribute('data-accordion-toggle');
+            if (!id) return;
+
+            const panel = document.getElementById(id);
+            if (!panel) return;
+
+            const isOpen = !panel.classList.contains('hidden');
+
+            // Close other panels
+            buttons.forEach((btn) => {
+              const otherId = btn.getAttribute('data-accordion-toggle');
+              if (!otherId || otherId === id) return;
+              const otherPanel = document.getElementById(otherId);
+              if (otherPanel) otherPanel.classList.add('hidden');
+            });
+
+            // Toggle current panel
+            panel.classList.toggle('hidden', isOpen);
+          });
+        });
+      });
+    </script>
+  </body>
+  </html>
+

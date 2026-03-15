@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LandBank Auto Loan – Presentation View</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              landbank: { green: '#007a33', dark: '#00441f', gold: '#c9a13a' },
+              navy: { DEFAULT: '#1e3a5f', dark: '#0f2744' },
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      html { scroll-behavior: smooth; }
+      .slides-viewport { overflow: hidden; width: 100%; height: 100%; position: relative; }
+      .slides-track { display: flex; height: 100%; will-change: transform; }
+      .slides-track .slide { flex: 0 0 100vw; width: 100vw; min-width: 100vw; max-width: 100vw; height: 100%; box-sizing: border-box; }
+      .slide { opacity: 1; visibility: visible; }
+      .slide .slide-animate-title, .slide .slide-animate-desc, .slide .slide-animate-image, .slide .slide-animate-cards > *, .slide .slide-animate-hero-text > * { opacity: 0; will-change: transform, opacity; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .presentation-mode header { display: none; }
+      #exitPresentationBtn { display: none; }
+      .presentation-mode #exitPresentationBtn { display: inline-flex !important; }
+      .split-image-left { position: relative; }
+      .split-content-right { position: relative; }
+      .diagonal-stripes { background-image: linear-gradient(135deg, rgba(0,122,51,0.04) 25%, transparent 25%), linear-gradient(225deg, rgba(0,122,51,0.04) 25%, transparent 25%); background-size: 20px 20px; }
+      .card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+      .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -12px rgba(0, 68, 31, 0.2); }
+      .landbank-journey-bg { background: linear-gradient(160deg, #f0fdf4 0%, #ecfdf5 35%, #d1fae5 70%, #a7f3d0 100%); }
+      .journey-glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; box-shadow: 0 8px 32px rgba(0,68,31,0.08), 0 0 0 1px rgba(255,255,255,0.6); }
+      .journey-timeline-line { background: linear-gradient(90deg, #007a33 0%, #059669 50%, #10b981 100%); height: 4px; border-radius: 2px; }
+      .journey-step-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; transition: box-shadow 0.3s ease, transform 0.2s ease; }
+      .journey-step-circle.active { box-shadow: 0 0 0 4px rgba(255,255,255,0.9), 0 0 20px 4px rgba(0,122,51,0.4); }
+      .journey-card { border-radius: 18px; transition: transform 0.25s ease, box-shadow 0.25s ease; }
+      .journey-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px -8px rgba(0,68,31,0.18); }
+      .journey-cta { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+      .journey-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -4px rgba(0,68,31,0.35); }
+      .font-journey { font-family: 'Poppins', system-ui, sans-serif; }
+      .landbank-basic-docs-bg {
+        background: url('assets/landbank-basic-docs-bg.png') center center / cover no-repeat;
+      }
+      .basic-docs-photo-ring {
+        box-shadow: 0 0 0 4px rgba(255,255,255,0.9), 0 0 0 8px rgba(0,122,51,0.25), 0 0 0 12px rgba(201,161,58,0.2), inset 0 2px 8px rgba(0,0,0,0.06);
+      }
+      .basic-docs-card-frost {
+        background: rgba(255,255,255,0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 8px 32px -8px rgba(0, 68, 31, 0.12), 0 0 0 1px rgba(255,255,255,0.5);
+      }
+      .basic-docs-fab { box-shadow: 0 8px 24px -4px rgba(0, 68, 31, 0.35); }
+
+      .auto-hero-car {
+        background-image: radial-gradient(circle at 20% 0%, rgba(255,255,255,0.08), transparent 55%);
+      }
+      .auto-hero-car-frame {
+        position: absolute;
+        inset: 14% 6% 6% 4%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .auto-hero-car-frame img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 24px 40px rgba(0,0,0,0.7));
+      }
+
+      /* Vehicle & Collateral poster-style shell */
+      .auto-collateral-shell {
+        position: relative;
+        max-width: 1040px;
+        border-radius: 32px;
+        padding: 2.3rem 2.4rem 2.5rem;
+        background:
+          radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.9), rgba(232, 245, 233, 0.7)),
+          radial-gradient(circle at 100% 100%, rgba(0, 102, 51, 0.32), transparent 65%),
+          radial-gradient(circle at 0% 100%, rgba(15, 138, 95, 0.25), transparent 60%),
+          linear-gradient(135deg, rgba(232, 245, 233, 0.96), rgba(255, 255, 255, 0.98));
+        box-shadow:
+          0 26px 80px rgba(0, 0, 0, 0.28),
+          0 0 0 1px rgba(255, 255, 255, 0.9);
+        overflow: hidden;
+      }
+      .auto-collateral-shell::before {
+        content: '';
+        position: absolute;
+        left: -15%;
+        right: -15%;
+        top: -40%;
+        height: 70%;
+        background:
+          radial-gradient(circle at 10% 30%, rgba(255, 255, 255, 0.95), transparent 55%),
+          radial-gradient(circle at 90% 20%, rgba(209, 250, 229, 0.7), transparent 60%),
+          linear-gradient(100deg, rgba(255, 255, 255, 0.2) 0%, rgba(76, 175, 80, 0.12) 35%, rgba(0, 102, 51, 0.12) 80%, rgba(0, 102, 51, 0) 100%);
+        opacity: 0.8;
+        pointer-events: none;
+      }
+      .auto-collateral-shell::after {
+        content: '';
+        position: absolute;
+        left: -10%;
+        right: -10%;
+        bottom: -45%;
+        height: 75%;
+        background:
+          radial-gradient(circle at 0% 60%, rgba(255, 255, 255, 0.6), transparent 60%),
+          radial-gradient(circle at 100% 40%, rgba(209, 250, 229, 0.6), transparent 65%);
+        opacity: 0.9;
+        pointer-events: none;
+      }
+      .auto-collateral-header {
+        position: relative;
+        margin-bottom: 1.9rem;
+        text-align: left;
+      }
+      .auto-collateral-tag {
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #047857;
+      }
+      .auto-collateral-title {
+        margin-top: 0.35rem;
+        font-size: 1.9rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #0f172a;
+      }
+      .auto-collateral-subtitle {
+        margin-top: 0.15rem;
+        font-size: 0.9rem;
+        color: #64748b;
+      }
+      .auto-collateral-grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.2rem;
+      }
+      @media (max-width: 900px) {
+        .auto-collateral-shell {
+          padding: 2rem 1.6rem 2.1rem;
+        }
+        .auto-collateral-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .auto-collateral-card {
+        position: relative;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow:
+          0 20px 55px rgba(15, 23, 42, 0.18),
+          0 0 0 1px rgba(255, 255, 255, 0.9);
+        padding: 1.2rem 1.4rem 1.25rem;
+      }
+      .auto-collateral-card:nth-child(2) {
+        box-shadow:
+          0 24px 60px rgba(15, 23, 42, 0.2),
+          0 0 0 1px rgba(255, 255, 255, 0.95);
+      }
+      .auto-collateral-icon-wrap {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at 20% 20%, #bbf7d0, #22c55e);
+        color: #064e3b;
+        font-size: 1.3rem;
+        margin-bottom: 0.75rem;
+      }
+      .auto-collateral-title-sm {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.3rem;
+      }
+      .auto-collateral-text {
+        font-size: 0.86rem;
+        color: #4b5563;
+        line-height: 1.5;
+      }
+
+      /* Additional Documents & Fees – frosted accordion shell */
+      .auto-additional-shell {
+        position: relative;
+        max-width: 1040px;
+        border-radius: 32px;
+        padding: 2.3rem 2.4rem 2.4rem;
+        background:
+          radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.92), rgba(232, 245, 233, 0.7)),
+          radial-gradient(circle at 100% 100%, rgba(0, 102, 51, 0.25), transparent 65%),
+          linear-gradient(135deg, rgba(232, 245, 233, 0.95), rgba(255, 255, 255, 0.98));
+        box-shadow:
+          0 26px 80px rgba(0, 0, 0, 0.28),
+          0 0 0 1px rgba(255, 255, 255, 0.9);
+        overflow: hidden;
+      }
+      .auto-additional-shell::before {
+        content: '';
+        position: absolute;
+        left: -15%;
+        right: -15%;
+        top: -40%;
+        height: 70%;
+        background:
+          radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.95), transparent 60%),
+          radial-gradient(circle at 85% 0%, rgba(209, 250, 229, 0.7), transparent 65%),
+          linear-gradient(100deg, rgba(255, 255, 255, 0.22) 0%, rgba(76, 175, 80, 0.12) 35%, rgba(0, 102, 51, 0.12) 80%, rgba(0, 102, 51, 0) 100%);
+        opacity: 0.85;
+        pointer-events: none;
+      }
+      .auto-additional-shell::after {
+        content: '';
+        position: absolute;
+        left: -10%;
+        right: -10%;
+        bottom: -45%;
+        height: 75%;
+        background:
+          radial-gradient(circle at 0% 60%, rgba(255, 255, 255, 0.7), transparent 60%),
+          radial-gradient(circle at 100% 40%, rgba(209, 250, 229, 0.6), transparent 65%);
+        opacity: 0.9;
+        pointer-events: none;
+      }
+      .auto-additional-header {
+        position: relative;
+        margin-bottom: 1.9rem;
+        text-align: left;
+      }
+      .auto-additional-tag {
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #047857;
+      }
+      .auto-additional-title {
+        margin-top: 0.35rem;
+        font-size: 1.9rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #0f172a;
+      }
+      .auto-additional-subtitle {
+        margin-top: 0.15rem;
+        font-size: 0.9rem;
+        color: #64748b;
+      }
+      .auto-additional-list {
+        position: relative;
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .auto-additional-item {
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.98), rgba(232, 245, 233, 0.9));
+        box-shadow:
+          0 18px 40px rgba(15, 23, 42, 0.18),
+          0 0 0 1px rgba(255, 255, 255, 0.95);
+        padding: 0.9rem 1.4rem;
+      }
+      .auto-additional-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        width: 100%;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #111827;
+      }
+      .auto-additional-plus {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 20%, #bbf7d0, #22c55e);
+        color: #064e3b;
+        font-size: 1rem;
+      }
+      .auto-additional-panel {
+        margin-top: 0.5rem;
+        padding-top: 0.55rem;
+        border-top: 1px dashed rgba(148, 163, 184, 0.6);
+        font-size: 0.85rem;
+        color: #4b5563;
+      }
+
+      /* Income Requirements poster-style shell (shared with home loan layout) */
+      .income-shell {
+        position: relative;
+        max-width: 1040px;
+        border-radius: 32px;
+        padding: 2.25rem 2.4rem 2.5rem;
+        background:
+          radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.85), rgba(232, 245, 233, 0.6)),
+          radial-gradient(circle at 0% 100%, rgba(0, 102, 51, 0.25), transparent 65%),
+          radial-gradient(circle at 100% 0%, rgba(15, 138, 95, 0.25), transparent 65%),
+          linear-gradient(135deg, rgba(232, 245, 233, 0.9), rgba(255, 255, 255, 0.96));
+        box-shadow:
+          0 26px 80px rgba(0, 0, 0, 0.25),
+          0 0 0 1px rgba(255, 255, 255, 0.9);
+        overflow: hidden;
+      }
+      .income-shell::before {
+        content: '';
+        position: absolute;
+        inset: -40% -20% auto;
+        background:
+          radial-gradient(circle at 0% 80%, rgba(255, 255, 255, 0.5), transparent 60%),
+          linear-gradient(100deg, rgba(255, 255, 255, 0.2) 0%, rgba(76, 175, 80, 0.12) 35%, rgba(0, 102, 51, 0.12) 80%, rgba(0, 102, 51, 0) 100%);
+        opacity: 0.7;
+        pointer-events: none;
+      }
+      .income-shell::after {
+        content: '';
+        position: absolute;
+        left: -10%;
+        right: -10%;
+        bottom: -45%;
+        height: 70%;
+        background:
+          radial-gradient(circle at 10% 30%, rgba(255, 255, 255, 0.85), transparent 55%),
+          radial-gradient(circle at 90% 40%, rgba(209, 250, 229, 0.75), transparent 60%),
+          radial-gradient(circle at 50% 60%, rgba(255, 215, 0, 0.16), transparent 60%);
+        opacity: 0.85;
+        pointer-events: none;
+      }
+      .income-header {
+        position: relative;
+        text-align: left;
+        margin-bottom: 1.9rem;
+      }
+      .income-tag {
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #047857;
+      }
+      .income-title {
+        margin-top: 0.4rem;
+        font-size: 1.85rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #0f172a;
+      }
+      .income-subtitle {
+        margin-top: 0.15rem;
+        font-size: 0.9rem;
+        color: #64748b;
+      }
+      .income-grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+      @media (max-width: 900px) {
+        .income-shell {
+          padding: 1.9rem 1.6rem 2.1rem;
+        }
+        .income-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .income-card {
+        position: relative;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow:
+          0 16px 40px rgba(15, 23, 42, 0.12),
+          0 0 0 1px rgba(255, 255, 255, 0.9);
+        padding: 1.15rem 1.4rem 1.25rem;
+      }
+      .income-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.65rem;
+      }
+      .income-card-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        background: radial-gradient(circle at 25% 20%, #bbf7d0, #059669);
+        color: #064e3b;
+      }
+      .income-card-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .income-card-chip {
+        margin-top: 0.1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.1rem 0.55rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        background: rgba(16, 185, 129, 0.08);
+        color: #047857;
+      }
+      .income-list {
+        margin-top: 0.2rem;
+        padding: 0;
+        list-style: none;
+        font-size: 0.86rem;
+        color: #334155;
+      }
+      .income-list li + li {
+        margin-top: 0.2rem;
+      }
+      .income-bullet {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        background: #22c55e1a;
+        color: #16a34a;
+        font-size: 0.7rem;
+        margin-right: 0.4rem;
+      }
+      .income-footnote {
+        position: relative;
+        margin-top: 1.15rem;
+        font-size: 0.76rem;
+        color: #6b7280;
+      }
+
+      /* Loan calculator premium layout (shared with Home Loan) */
+      .loan-calc-shell {
+        max-width: 1120px;
+        border-radius: 32px;
+        background: radial-gradient(circle at 0% 0%, #e8f5e9 0%, #ffffff 32%, #e8f5e9 64%, #0f8a5f 100%);
+        box-shadow:
+          0 26px 80px rgba(0, 0, 0, 0.28),
+          0 0 0 1px rgba(255, 255, 255, 0.75);
+        position: relative;
+        overflow: hidden;
+      }
+      .loan-calc-shell::before {
+        content: '';
+        position: absolute;
+        inset: -40%;
+        background:
+          radial-gradient(circle at 0% 0%, rgba(76, 175, 80, 0.35), transparent 55%),
+          radial-gradient(circle at 100% 100%, rgba(0, 102, 51, 0.45), transparent 55%);
+        opacity: 0.85;
+        pointer-events: none;
+      }
+      .loan-calc-inner {
+        position: relative;
+        padding: 2.25rem 2.5rem 2.25rem;
+      }
+      @media (max-width: 900px) {
+        .loan-calc-inner {
+          padding: 1.75rem 1.5rem 1.75rem;
+        }
+      }
+      .loan-calc-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.1fr);
+        gap: 1.5rem;
+      }
+      @media (max-width: 900px) {
+        .loan-calc-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .loan-calc-card {
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+      }
+      .loan-calc-card-header {
+        border-radius: 22px 22px 0 0;
+        background: linear-gradient(135deg, #006633, #0f8a5f);
+        padding: 0.75rem 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .loan-calc-card-header.secondary {
+        background: linear-gradient(135deg, #0f8a5f, #4CAF50);
+      }
+      .loan-calc-card-body {
+        padding: 1.1rem 1.4rem 1.35rem;
+      }
+      .loan-calc-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #607d8b;
+      }
+      .loan-calc-input {
+        margin-top: 0.35rem;
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid #cfd8dc;
+        background: #ffffff;
+        padding: 0.55rem 0.9rem;
+        font-size: 0.8rem;
+        color: #1f2933;
+      }
+      .loan-calc-input:focus {
+        outline: none;
+        border-color: #0f8a5f;
+        box-shadow: 0 0 0 1.5px rgba(15, 138, 95, 0.35);
+      }
+      .loan-calc-button {
+        border-radius: 999px;
+        background: linear-gradient(135deg, #0f8a5f, #006633);
+        color: #ffffff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.65rem 1.7rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        box-shadow: 0 14px 30px rgba(0, 102, 51, 0.5);
+      }
+      .loan-calc-button-secondary {
+        background: #ffffff;
+        color: #065f46;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+      }
+      .loan-calc-chip {
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.7rem;
+        background: rgba(15, 138, 95, 0.08);
+        color: #0f8a5f;
+        font-weight: 600;
+      }
+      .loan-calc-result-card {
+        border-radius: 18px;
+        padding: 0.8rem 1rem;
+        background: linear-gradient(135deg, #ffffff, #e8f5e9);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+      }
+      .loan-calc-result-label {
+        font-size: 0.75rem;
+        color: #546e7a;
+      }
+      .loan-calc-result-value {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #006633;
+      }
+
+      /* Global animated green-white gradient background (shared with Home Loan) */
+      .landbank-animated-bg {
+        position: relative;
+        overflow: hidden;
+      }
+      .landbank-animated-bg::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -3;
+        background: linear-gradient(90deg, #006633, #0f8a5f, #4CAF50, #e8f5e9, #ffffff, #e8f5e9);
+        background-size: 300% 100%;
+        animation: landbankHorizontalFlow 14s ease-in-out infinite alternate;
+      }
+      .landbank-animated-bg::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -4;
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        background: rgba(255, 255, 255, 0.0);
+        opacity: 0.85;
+        pointer-events: none;
+      }
+      @keyframes landbankHorizontalFlow {
+        0% { background-position: 100% 0%; }
+        100% { background-position: 0% 0%; }
+      }
+      #goldDustCanvas {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+      }
+      .presentation-logo {
+        position: fixed;
+        top: 0.9rem;
+        left: 1.1rem;
+        z-index: 40;
+        height: 44px;
+        width: auto;
+        display: none;
+      }
+      .presentation-mode .presentation-logo {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen text-slate-900 landbank-animated-bg">
+    <canvas id="goldDustCanvas"></canvas>
+    <img src="assets/landbank-logo.png" alt="LandBank" class="presentation-logo" />
+    <div class="min-h-screen flex flex-col">
+      <header class="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-emerald-900/5 shadow-sm">
+        <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+          <div class="flex items-center gap-3">
+            <img src="assets/landbank-logo.png" alt="LandBank" class="h-11 w-auto" />
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-widest text-emerald-700">LANDBANK</p>
+              <p class="text-xs font-medium text-slate-800">Auto Loan Requirements</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="presentationToggle" type="button" class="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-[11px] font-medium text-emerald-800 hover:bg-emerald-50 transition">Presentation Mode</button>
+            <a href="index.html#services" class="hidden sm:inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-medium text-emerald-800 hover:bg-emerald-100 transition">← Back</a>
+          </div>
+        </div>
+      </header>
+
+      <button id="exitPresentationBtn" type="button" class="fixed top-4 right-4 z-[100] inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white/95 px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-400 transition" aria-label="Close / Exit Presentation">
+        <span class="text-base leading-none" aria-hidden="true">×</span>
+        <span>Close</span>
+      </button>
+
+      <main class="flex-1 relative">
+        <div id="slidesViewport" class="slides-viewport h-[calc(100vh-4rem)]">
+          <div id="slidesTrack" class="slides-track">
+          <!-- Slide 1 – Title: Split layout (image left, white panel right) -->
+          <section class="slide flex flex-row overflow-hidden" data-slide="0">
+            <!-- Left: Hero image (parking lot background) -->
+            <div
+              id="heroImageParallax"
+              class="split-image-left relative h-full min-h-0 w-[48%] min-w-[45%] flex-shrink-0 bg-cover bg-no-repeat bg-center slide-animate-image overflow-hidden"
+              style="background-image: url('assets/auto-hero-parking.png'); background-size: cover; background-position: center center;"
+            >
+              <div class="absolute bottom-0 left-0 h-0 w-0 border-b-[100px] border-l-[100px] border-b-emerald-500/20 border-l-transparent" style="border-style: solid;"></div>
+              <div class="float-shape absolute rounded-full bg-white/5 w-64 h-64 -bottom-20 -right-20" aria-hidden="true"></div>
+              <div class="float-shape absolute rounded-full bg-emerald-400/5 w-40 h-40 top-1/4 -left-10" aria-hidden="true"></div>
+              <div class="float-shape absolute rounded-lg bg-white/5 w-32 h-32 bottom-1/3 right-1/4 rotate-12" aria-hidden="true"></div>
+            </div>
+
+            <!-- Right: Clean white panel -->
+            <div class="split-content-right relative flex h-full flex-1 flex-col justify-center bg-white px-8 py-12 pl-[14%] pr-14 shadow-2xl sm:px-12 sm:pl-[16%] lg:pl-[18%] slide-animate-hero-text">
+              <p class="text-xs font-semibold uppercase tracking-[0.32em] text-landbank-green slide-animate-title">LANDBANK AUTO LOAN</p>
+              <h1 class="mt-4 font-sans text-3xl font-bold tracking-tight text-navy sm:text-4xl lg:text-5xl xl:text-[2.75rem] slide-animate-title">
+                AUTO LOAN<br />REQUIREMENTS
+              </h1>
+              <p class="mt-2 text-base font-medium text-slate-600 slide-animate-desc">LandBank Auto Loan Presentation</p>
+              <p class="mt-5 max-w-md text-sm leading-relaxed text-slate-400 slide-animate-desc">
+                A quick overview of documents, steps, and fees for financing your car. Use the arrows or dots on the right to navigate.
+              </p>
+            </div>
+          </section>
+
+          <!-- Slide 2 – Loan Application Journey (premium PROCESS TIMELINE) -->
+            <section class="slide journey-slide flex items-center justify-center px-4 py-8 sm:px-6 sm:py-10 font-journey" data-slide="1">
+              <div class="journey-glass slide-inner mx-auto w-full max-w-5xl px-6 py-8 sm:px-10 sm:py-10 journey-fade-in text-center">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 slide-animate-title">Loan Application Journey</h2>
+                <p class="mt-2 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto slide-animate-desc">A simple and guided process to help you secure your auto loan smoothly and confidently.</p>
+                <p class="mt-4 inline-flex items-center gap-2 text-xs sm:text-sm text-emerald-700 bg-emerald-50/80 rounded-full px-3 py-1.5 slide-animate-desc">
+                  <span aria-hidden="true">🕐</span>
+                  Processing Time: 5–7 Banking Days
+                </p>
+
+                <div class="slide-animate-cards">
+                <!-- Horizontal step progress tracker -->
+                <div class="mt-8 sm:mt-10 flex flex-col items-center">
+                  <div class="flex items-center justify-between w-full max-w-2xl gap-2">
+                    <div class="journey-step-circle active">1</div>
+                    <div class="journey-timeline-line flex-1 min-w-[6px]"></div>
+                    <div class="journey-step-circle done">2</div>
+                    <div class="journey-timeline-line flex-1 min-w-[6px]"></div>
+                    <div class="journey-step-circle done">3</div>
+                    <div class="journey-timeline-line flex-1 min-w-[6px]"></div>
+                    <div class="journey-step-circle done">4</div>
+                    <div class="journey-timeline-line flex-1 min-w-[6px]"></div>
+                    <div class="journey-step-circle pending">5</div>
+                  </div>
+                </div>
+
+                <!-- 5 step cards -->
+                <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-3">
+                  <div class="journey-card p-4 sm:p-5">
+                    <div class="journey-card-icon flex h-12 w-12 items-center justify-center rounded-xl text-xl">📄</div>
+                    <h3 class="mt-3 text-sm font-bold text-slate-900">Submit Application</h3>
+                    <p class="mt-1 text-xs text-slate-600 leading-snug">Forms and initial KYC and income documents</p>
+                  </div>
+                  <div class="journey-card p-4 sm:p-5">
+                    <div class="journey-card-icon flex h-12 w-12 items-center justify-center rounded-xl text-xl">✓</div>
+                    <h3 class="mt-3 text-sm font-bold text-slate-900">Document Check</h3>
+                    <p class="mt-1 text-xs text-slate-600 leading-snug">IDs, proof of billing, dealer quotation</p>
+                  </div>
+                  <div class="journey-card p-4 sm:p-5">
+                    <div class="journey-card-icon flex h-12 w-12 items-center justify-center rounded-xl text-xl">📊</div>
+                    <h3 class="mt-3 text-sm font-bold text-slate-900">Loan Evaluation</h3>
+                    <p class="mt-1 text-xs text-slate-600 leading-snug">Credit and vehicle suitability</p>
+                  </div>
+                  <div class="journey-card p-4 sm:p-5">
+                    <div class="journey-card-icon flex h-12 w-12 items-center justify-center rounded-xl text-xl">🛡</div>
+                    <h3 class="mt-3 text-sm font-bold text-slate-900">Loan Approval</h3>
+                    <p class="mt-1 text-xs text-slate-600 leading-snug">Terms discussed with client</p>
+                  </div>
+                  <div class="journey-card p-4 sm:p-5">
+                    <div class="journey-card-icon flex h-12 w-12 items-center justify-center rounded-xl text-xl">💰</div>
+                    <h3 class="mt-3 text-sm font-bold text-slate-900">Loan Release</h3>
+                    <p class="mt-1 text-xs text-slate-600 leading-snug">Proceeds to dealer; ADA starts</p>
+                  </div>
+                </div>
+
+                <!-- Bottom CTA -->
+                <div class="mt-8 sm:mt-10 flex justify-center">
+                  <button type="button" class="journey-cta rounded-2xl px-8 py-3.5 text-base font-semibold text-white border-0">Apply Now</button>
+                </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Slide 3 – Basic Documents (modern banking UI) -->
+            <section class="slide relative flex items-center justify-center px-6 py-8 sm:py-10 overflow-hidden" data-slide="2">
+              <div class="slide-inner relative z-10 mx-auto w-full max-w-5xl flex flex-col items-center">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-600 slide-animate-title">Applicant Profile</p>
+                <div class="mt-3 relative slide-animate-image">
+                  <div class="basic-docs-photo-ring w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-50/80 flex items-center justify-center border border-white/80">
+                    <span class="text-4xl sm:text-5xl opacity-90">👨‍👩‍👧</span>
+                  </div>
+                </div>
+                <svg class="absolute left-1/2 -translate-x-1/2 top-[11rem] sm:top-[12.5rem] w-full max-w-2xl h-16 sm:h-20 pointer-events-none hidden sm:block" viewBox="0 0 400 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M200 0 V32 M200 32 L70 80 M200 32 L200 80 M200 32 L330 80" stroke="rgba(0,122,51,0.4)" stroke-width="1.5" stroke-dasharray="5 4"/>
+                </svg>
+                <h2 class="mt-6 sm:mt-8 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 slide-animate-title">Basic Documents</h2>
+                <p class="mt-1 text-sm text-slate-500 slide-animate-desc">Forms and identification required for all auto loan applicants.</p>
+                <div class="mt-6 sm:mt-8 grid gap-4 sm:grid-cols-3 w-full max-w-4xl slide-animate-cards">
+                  <div class="card-hover basic-docs-card-frost rounded-2xl p-5 sm:p-6 border border-white/60">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-pink-100 text-2xl">📄</div>
+                    <h3 class="mt-4 text-base font-bold text-slate-800">Application &amp; KYC</h3>
+                    <ul class="mt-3 space-y-1.5 text-sm text-slate-600 list-none">
+                      <li>• Completed Auto Loan Application Form</li>
+                      <li>• Customer Information Sheet (CIS)</li>
+                      <li>• Two valid government ID's</li>
+                    </ul>
+                  </div>
+                  <div class="card-hover basic-docs-card-frost rounded-2xl p-5 sm:p-6 border border-white/60">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-2xl">🪪</div>
+                    <h3 class="mt-4 text-base font-bold text-slate-800">Identity &amp; Billing</h3>
+                    <ul class="mt-3 space-y-1.5 text-sm text-slate-600 list-none">
+                      <li>• Latest proof of billing</li>
+                      <li>• Electricity, water, telecom</li>
+                    </ul>
+                  </div>
+                  <div class="card-hover basic-docs-card-frost rounded-2xl p-5 sm:p-6 border border-white/60">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-2xl">📋</div>
+                    <h3 class="mt-4 text-base font-bold text-slate-800">Income &amp; Deposit</h3>
+                    <ul class="mt-3 space-y-1.5 text-sm text-slate-600 list-none">
+                      <li>• Branch-certified statements (6 months)</li>
+                      <li>• Payroll / pension / deposit as applicable</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-slate-400/70 pointer-events-none z-10">
+                <span class="flex items-center gap-1">Activate Now</span>
+                <span>Activate Windows - Go to Settings to activate Windows.</span>
+              </div>
+            </section>
+
+            <!-- Slide 4 – Income Requirements (poster-style with twin frosted cards) -->
+            <section class="slide flex items-center justify-center px-4 sm:px-6 py-8" data-slide="3">
+              <div class="slide-inner mx-auto w-full max-w-5xl slide-animate-cards">
+                <div class="income-shell">
+                  <div class="income-header">
+                    <p class="income-tag slide-animate-title">Income</p>
+                    <h2 class="income-title slide-animate-title">Income Requirements</h2>
+                    <p class="income-subtitle slide-animate-desc">Evidence of capacity to pay</p>
+                  </div>
+
+                  <div class="income-grid">
+                    <!-- Payroll / Locally Employed -->
+                    <div class="income-card card-hover">
+                      <div class="income-card-header">
+                        <span class="income-card-icon">📋</span>
+                        <div>
+                          <p class="income-card-title">Payroll / Locally Employed</p>
+                          <div class="income-card-chip">
+                            <span>Salary-Based</span>
+                          </div>
+                        </div>
+                      </div>
+                      <ul class="income-list">
+                        <li>
+                          <span class="income-bullet">✓</span>
+                          COE, latest payslips (3 months), ITR
+                        </li>
+                        <li>
+                          <span class="income-bullet">✓</span>
+                          Branch-certified payroll / deposit statements (6 months)
+                        </li>
+                      </ul>
+                    </div>
+
+                    <!-- Other Depositors & Business Owners -->
+                    <div class="income-card card-hover">
+                      <div class="income-card-header">
+                        <span class="income-card-icon">💼</span>
+                        <div>
+                          <p class="income-card-title">Other Depositors &amp; Business Owners</p>
+                          <div class="income-card-chip">
+                            <span>Business / Deposit</span>
+                          </div>
+                        </div>
+                      </div>
+                      <ul class="income-list">
+                        <li>
+                          <span class="income-bullet">✓</span>
+                          Valid IDs and branch-certified deposit statements (6 months)
+                        </li>
+                        <li>
+                          <span class="income-bullet">✓</span>
+                          Latest ITR, audited financial statements; DTI/SEC when required
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <p class="income-footnote">
+                    Use this slide to confirm that the client’s income and deposits can comfortably support the proposed auto loan.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <!-- Slide 5 – Vehicle & Collateral (poster-style three cards) -->
+            <section class="slide flex items-center justify-center px-4 sm:px-6 py-8" data-slide="4">
+              <div class="slide-inner mx-auto w-full max-w-5xl slide-animate-cards">
+                <div class="auto-collateral-shell">
+                  <div class="auto-collateral-header">
+                    <p class="auto-collateral-tag slide-animate-title">Collateral</p>
+                    <h2 class="auto-collateral-title slide-animate-title">Vehicle &amp; Collateral Requirements</h2>
+                    <p class="auto-collateral-subtitle slide-animate-desc">Details on the vehicle and chattel security.</p>
+                  </div>
+
+                  <div class="auto-collateral-grid">
+                    <div class="auto-collateral-card card-hover">
+                      <div class="auto-collateral-icon-wrap">🚗</div>
+                      <h3 class="auto-collateral-title-sm">Dealer Quotation</h3>
+                      <p class="auto-collateral-text">
+                        Vehicle quotation or pro‑forma invoice showing make, model, variant, year, color, and price.
+                      </p>
+                    </div>
+
+                    <div class="auto-collateral-card card-hover">
+                      <div class="auto-collateral-icon-wrap">📄</div>
+                      <h3 class="auto-collateral-title-sm">OR/CR &amp; Insurance</h3>
+                      <p class="auto-collateral-text">
+                        For existing vehicles: updated OR/CR and comprehensive insurance with LandBank indicated as
+                        mortgagee.
+                      </p>
+                    </div>
+
+                    <div class="auto-collateral-card card-hover">
+                      <div class="auto-collateral-icon-wrap">📑</div>
+                      <h3 class="auto-collateral-title-sm">Chattel Mortgage</h3>
+                      <p class="auto-collateral-text">
+                        Chattel mortgage documents and related fees based on loan amount, including taxes and
+                        notarization.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Slide 6 – Additional Documents & Fees (poster-style frosted accordion) -->
+            <section class="slide flex items-center justify-center px-4 sm:px-6 py-8" data-slide="5">
+              <div class="slide-inner mx-auto w-full max-w-5xl slide-animate-cards">
+                <div class="auto-additional-shell">
+                  <div class="auto-additional-header">
+                    <p class="auto-additional-tag slide-animate-title">Supporting</p>
+                    <h2 class="auto-additional-title slide-animate-title">Additional Documents &amp; Fees</h2>
+                    <p class="auto-additional-subtitle slide-animate-desc">
+                      Expand each section depending on the client.
+                    </p>
+                  </div>
+
+                  <div class="auto-additional-list">
+                    <div class="auto-additional-item card-hover">
+                      <button
+                        type="button"
+                        class="auto-additional-button"
+                        data-accordion-toggle="auto-add-contracts"
+                      >
+                        <span>Dealer &amp; Contract Documents</span>
+                        <span class="auto-additional-plus">+</span>
+                      </button>
+                      <div
+                        id="auto-add-contracts"
+                        class="auto-additional-panel hidden text-slate-600 text-sm"
+                      >
+                        <ul class="list-disc list-inside space-y-1">
+                          <li>Dealer sales invoice or final quotation.</li>
+                          <li>Dealer‑issued reservation or purchase agreements, if applicable.</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div class="auto-additional-item card-hover">
+                      <button
+                        type="button"
+                        class="auto-additional-button"
+                        data-accordion-toggle="auto-add-fees"
+                      >
+                        <span>Typical Fees &amp; Charges</span>
+                        <span class="auto-additional-plus">+</span>
+                      </button>
+                      <div
+                        id="auto-add-fees"
+                        class="auto-additional-panel hidden text-slate-600 text-sm"
+                      >
+                        <ul class="list-disc list-inside space-y-1">
+                          <li>Chattel Mortgage Fees (DST, processing, notarial), approx. 2–3% of loan.</li>
+                          <li>Comprehensive Vehicle Insurance.</li>
+                          <li>Regulatory and documentation fees.</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div class="auto-additional-item card-hover">
+                      <button
+                        type="button"
+                        class="auto-additional-button"
+                        data-accordion-toggle="auto-add-others"
+                      >
+                        <span>Other Bank Requirements</span>
+                        <span class="auto-additional-plus">+</span>
+                      </button>
+                      <div
+                        id="auto-add-others"
+                        class="auto-additional-panel hidden text-slate-600 text-sm"
+                      >
+                        <ul class="list-disc list-inside space-y-1">
+                          <li>Enrollment to Auto‑Debit Arrangement (ADA).</li>
+                          <li>Any other documents per credit or regulatory policies.</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Slide 7 – Loan Calculator (premium layout, Auto Loan) -->
+            <section class="slide flex items-center justify-center px-6 py-12" data-slide="6">
+              <div class="slide-inner loan-calc-shell">
+                <div class="loan-calc-inner">
+                  <p class="text-xs font-semibold uppercase tracking-[0.26em] text-emerald-900/80 slide-animate-title">LandBank Auto Loan</p>
+                  <h2 class="mt-1 text-3xl font-bold tracking-tight text-emerald-900 sm:text-4xl slide-animate-title">Loan Calculator</h2>
+                  <p class="mt-1 text-sm text-emerald-900/80 slide-animate-desc">Estimate your monthly auto loan payment.</p>
+
+                  <div class="mt-6 loan-calc-grid slide-animate-cards">
+                    <!-- Left: Loan Information -->
+                    <div class="loan-calc-card">
+                      <div class="loan-calc-card-header">
+                        <div class="h-7 w-7 rounded-full bg-white/15 flex items-center justify-center text-white text-sm">₱</div>
+                        <div class="text-white">
+                          <p class="text-[11px] uppercase tracking-[0.22em] opacity-80">Loan Information</p>
+                          <p class="text-sm font-semibold leading-tight">Your Loan Details</p>
+                        </div>
+                      </div>
+                      <div class="loan-calc-card-body space-y-3.5 text-sm">
+                        <div>
+                          <label for="autoCalcAmount" class="loan-calc-label">Loan Amount (₱)</label>
+                          <input id="autoCalcAmount" type="number" min="0" step="1000" placeholder="e.g. 800000" class="loan-calc-input" />
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                          <div>
+                            <label for="autoCalcRate" class="loan-calc-label">Interest Rate (% per year)</label>
+                            <input id="autoCalcRate" type="number" min="0" step="0.01" placeholder="e.g. 7" class="loan-calc-input" />
+                          </div>
+                          <div>
+                            <label for="autoCalcTerm" class="loan-calc-label">Loan Term (years)</label>
+                            <input id="autoCalcTerm" type="number" min="1" step="1" placeholder="e.g. 5" class="loan-calc-input" />
+                          </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-3 pt-1">
+                          <button id="autoCalcCalculate" type="button" class="loan-calc-button">
+                            Calculate Payment
+                          </button>
+                          <button id="autoCalcReset" type="button" class="loan-calc-button loan-calc-button-secondary">
+                            Clear
+                          </button>
+                          <span class="loan-calc-chip">Based on fixed rate &amp; monthly payments</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Right: Estimated Results -->
+                    <div class="loan-calc-card">
+                      <div class="loan-calc-card-header secondary">
+                        <div class="h-7 w-7 rounded-full bg-white/15 flex items-center justify-center text-white text-sm">≡</div>
+                        <div class="text-white">
+                          <p class="text-[11px] uppercase tracking-[0.22em] opacity-80">Estimated Results</p>
+                          <p class="text-sm font-semibold leading-tight">Payment Summary</p>
+                        </div>
+                      </div>
+                      <div class="loan-calc-card-body space-y-3.5 text-sm">
+                        <div class="grid gap-2.5">
+                          <div class="loan-calc-result-card">
+                            <p class="loan-calc-result-label">Monthly Payment</p>
+                            <p id="autoCalcMonthly" class="loan-calc-result-value mt-0.5">—</p>
+                          </div>
+                          <div class="loan-calc-result-card">
+                            <p class="loan-calc-result-label">Total Payment</p>
+                            <p id="autoCalcTotal" class="loan-calc-result-value mt-0.5">—</p>
+                          </div>
+                          <div class="loan-calc-result-card">
+                            <p class="loan-calc-result-label">Total Interest</p>
+                            <p id="autoCalcInterest" class="loan-calc-result-value mt-0.5">—</p>
+                          </div>
+                        </div>
+
+                        <div class="mt-2 grid gap-3 items-start sm:grid-cols-[1.2fr,1fr]">
+                          <div class="text-xs text-emerald-950/85 space-y-1.5">
+                            <p class="font-semibold uppercase tracking-[0.16em] text-emerald-900/90">Payment Breakdown</p>
+                            <div class="flex items-center justify-between">
+                              <span class="text-emerald-800">Principal</span>
+                              <span class="font-semibold text-emerald-900" data-calc-principal>—</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                              <span class="text-emerald-800">Interest</span>
+                              <span class="font-semibold text-amber-700" data-calc-interest>—</span>
+                            </div>
+                            <p class="text-[10px] text-emerald-900/70 pt-1">Values are indicative. Update inputs for each client scenario.</p>
+                          </div>
+                          <div class="h-28 sm:h-32">
+                            <canvas id="autoCalcChart"></canvas>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Slide 8 – Call to Action -->
+            <section class="slide flex items-center justify-center px-6 py-12" data-slide="7">
+              <div class="slide-inner mx-auto max-w-4xl rounded-[28px] border border-white/10 bg-emerald-950/40 px-8 py-10 shadow-2xl backdrop-blur sm:px-12">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-200 slide-animate-title">Next Steps</p>
+                <h2 class="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl slide-animate-title">Ready to drive your new vehicle?</h2>
+                <p class="mt-3 max-w-xl text-sm text-emerald-100/90 slide-animate-desc">Close your presentation by inviting the client to choose how they prefer to proceed.</p>
+                <div class="mt-6 flex flex-wrap gap-3 slide-animate-cards">
+                  <button
+                    type="button"
+                    class="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-landbank-green to-landbank-dark px-6 py-2 text-xs font-semibold text-white shadow-lg shadow-emerald-950/60 hover:-translate-y-0.5 hover:shadow-emerald-900/80 transition"
+                  >
+                    Apply for Auto Loan
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex items-center justify-center rounded-full border border-emerald-200 bg-emerald-50/10 px-5 py-2 text-xs font-medium text-emerald-50 hover:bg-emerald-50/20 transition"
+                  >
+                    Talk to a Loan Officer
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- Right-side navigation -->
+        <div class="pointer-events-none absolute inset-y-0 right-3 top-0 flex flex-col items-center justify-center gap-3 z-30">
+          <button id="slidePrev" type="button" class="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/95 border border-emerald-200 text-emerald-700 shadow-lg hover:bg-emerald-50 transition" aria-label="Previous">‹</button>
+          <div id="slideDots" class="pointer-events-auto flex flex-col gap-2"></div>
+          <button id="slideNext" type="button" class="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/95 border border-emerald-200 text-emerald-700 shadow-lg hover:bg-emerald-50 transition" aria-label="Next">›</button>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const viewport = document.getElementById('slidesViewport');
+        const track = document.getElementById('slidesTrack');
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        const prevBtn = document.getElementById('slidePrev');
+        const nextBtn = document.getElementById('slideNext');
+        const dotsContainer = document.getElementById('slideDots');
+        const presentationToggle = document.getElementById('presentationToggle');
+
+        if (!viewport || !track || slides.length === 0) return;
+
+        let currentIndex = 0, isAnimating = false;
+        const DURATION = 1.25, EASE = 'power3.out';
+        function getSlideWidth() { return viewport.clientWidth; }
+        function getSlideX() { return -currentIndex * getSlideWidth(); }
+
+        slides.forEach((_, i) => {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'slide-dot h-2.5 w-2.5 rounded-full border border-emerald-300 bg-emerald-100/50 hover:bg-emerald-300 transition-all duration-300';
+          dot.dataset.index = String(i);
+          dot.addEventListener('click', () => goToSlide(i));
+          dotsContainer.appendChild(dot);
+        });
+        const dots = dotsContainer.querySelectorAll('.slide-dot');
+
+        function updateDots() {
+          dots.forEach((d, i) => {
+            d.classList.toggle('bg-landbank-green', i === currentIndex);
+            d.classList.toggle('border-landbank-green', i === currentIndex);
+            gsap.to(d, { scale: i === currentIndex ? 1.35 : 1, duration: 0.35, ease: 'power2.out' });
+          });
+        }
+
+        function animateSlideIn(slide) {
+          slide.classList.add('slide-entered');
+          const titles = slide.querySelectorAll('.slide-animate-title'), descs = slide.querySelectorAll('.slide-animate-desc'), images = slide.querySelectorAll('.slide-animate-image'), cardContainers = slide.querySelectorAll('.slide-animate-cards'), heroTexts = slide.querySelectorAll('.slide-animate-hero-text');
+          gsap.set(titles, { y: 36, opacity: 0 }); gsap.set(descs, { opacity: 0 }); gsap.set(images, { scale: 0.92, opacity: 0 });
+          if (cardContainers.length && cardContainers[0].children.length) gsap.set(cardContainers[0].children, { y: 24, opacity: 0 });
+          if (heroTexts.length && heroTexts[0].children.length) gsap.set(heroTexts[0].children, { y: 20, opacity: 0 });
+          const tl = gsap.timeline({ defaults: { ease: EASE, duration: 1.05 } });
+          tl.to(titles, { y: 0, opacity: 1, duration: 1.0, stagger: 0.08 }).to(descs, { opacity: 1, duration: 0.6 }, '-=0.6').to(images, { scale: 1, opacity: 1, duration: 1.2 }, '-=0.9');
+          if (cardContainers.length && cardContainers[0].children.length) tl.to(cardContainers[0].children, { y: 0, opacity: 1, duration: 0.6, stagger: 0.09 }, '-=0.5');
+          if (heroTexts.length && heroTexts[0].children.length) tl.to(heroTexts[0].children, { y: 0, opacity: 1, duration: 0.6, stagger: 0.08 }, '-=0.7');
+        }
+
+        function goToSlide(index) {
+          if (index < 0 || index >= slides.length || isAnimating) return;
+          currentIndex = index;
+          isAnimating = true;
+          gsap.to(track, { x: getSlideX(), duration: DURATION, ease: EASE, onComplete: () => { isAnimating = false; updateDots(); animateSlideIn(slides[currentIndex]); } });
+          updateDots();
+        }
+
+        gsap.set(track, { x: 0 });
+        slides.forEach(s => s.classList.remove('slide-entered'));
+        animateSlideIn(slides[0]);
+        updateDots();
+
+        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight') { e.preventDefault(); goToSlide(currentIndex + 1); }
+          else if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(currentIndex - 1); }
+        });
+
+        let wheelTimeout = null;
+        viewport.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          if (wheelTimeout || isAnimating) return;
+          if (e.deltaY > 0) goToSlide(currentIndex + 1);
+          else if (e.deltaY < 0) goToSlide(currentIndex - 1);
+          wheelTimeout = setTimeout(() => { wheelTimeout = null; }, 600);
+        }, { passive: false });
+
+        function setPresentationMode(on) {
+          document.body.classList.toggle('presentation-mode', on);
+          try { if (on) document.documentElement.requestFullscreen(); else if (document.fullscreenElement) document.exitFullscreen(); } catch (_) {}
+        }
+        presentationToggle.addEventListener('click', () => setPresentationMode(!document.body.classList.contains('presentation-mode')));
+        document.getElementById('exitPresentationBtn').addEventListener('click', () => setPresentationMode(false));
+
+        const heroImg = document.getElementById('heroImageParallax');
+        if (heroImg && heroImg.querySelectorAll) heroImg.querySelectorAll('.float-shape').forEach((el, i) => {
+          gsap.to(el, { y: (i % 2 === 0 ? 15 : -12) + 'px', x: (i === 0 ? -10 : 8) + 'px', duration: 4 + i * 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        });
+
+        window.addEventListener('resize', () => gsap.set(track, { x: getSlideX() }));
+
+        // Gold dust particle background
+        (function initGoldDust() {
+          const canvas = document.getElementById('goldDustCanvas');
+          if (!canvas || !canvas.getContext) return;
+          const ctx = canvas.getContext('2d');
+          let width = window.innerWidth;
+          let height = window.innerHeight;
+          canvas.width = width;
+          canvas.height = height;
+
+          const colors = ['#FFD700', '#f6c453', '#e6b800', '#f4d03f'];
+          const particles = [];
+          const PARTICLE_COUNT = 80;
+
+          for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push({
+              x: Math.random() * width,
+              y: Math.random() * height,
+              r: 1 + Math.random() * 2,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              baseAlpha: 0.2 + Math.random() * 0.15,
+              twinkleAmp: 0.08 + Math.random() * 0.07,
+              phase: Math.random() * Math.PI * 2,
+              speedX: (Math.random() - 0.5) * 0.05,
+              speedY: -0.02 + Math.random() * 0.05
+            });
+          }
+
+          function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+          }
+          window.addEventListener('resize', resizeCanvas);
+
+          function draw() {
+            ctx.clearRect(0, 0, width, height);
+            const time = performance.now() / 1000;
+            for (const p of particles) {
+              p.x += p.speedX;
+              p.y += p.speedY;
+              if (p.x < -5) p.x = width + 5;
+              if (p.x > width + 5) p.x = -5;
+              if (p.y < -5) p.y = height + 5;
+              if (p.y > height + 5) p.y = -5;
+
+              const alpha = p.baseAlpha + Math.sin(time * 0.8 + p.phase) * p.twinkleAmp;
+              ctx.globalAlpha = Math.max(0, Math.min(0.45, alpha));
+              const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.5);
+              grd.addColorStop(0, p.color);
+              grd.addColorStop(1, 'rgba(0,0,0,0)');
+              ctx.fillStyle = grd;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.r * 2.5, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(draw);
+          }
+          draw();
+        })();
+
+
+        // Accordion toggles on slide 6
+        const accButtons = document.querySelectorAll('[data-accordion-toggle]');
+        accButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-accordion-toggle');
+            if (!id) return;
+            const panel = document.getElementById(id);
+            if (!panel) return;
+            const isOpen = !panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', isOpen);
+          });
+        });
+
+        // Inline loan calculator on Slide 7
+        const autoAmountInput = document.getElementById('autoCalcAmount');
+        const autoRateInput = document.getElementById('autoCalcRate');
+        const autoTermInput = document.getElementById('autoCalcTerm');
+        const autoCalculateBtn = document.getElementById('autoCalcCalculate');
+        const autoResetBtn = document.getElementById('autoCalcReset');
+        const autoMonthlyEl = document.getElementById('autoCalcMonthly');
+        const autoTotalEl = document.getElementById('autoCalcTotal');
+        const autoInterestEl = document.getElementById('autoCalcInterest');
+        const autoChartCanvas = document.getElementById('autoCalcChart');
+        let autoBreakdownChart = null;
+
+        if (autoAmountInput && autoRateInput && autoTermInput && autoMonthlyEl && autoTotalEl && autoInterestEl) {
+          function autoFormatCurrency(value) {
+            if (!isFinite(value)) return '—';
+            return new Intl.NumberFormat('en-PH', {
+              style: 'currency',
+              currency: 'PHP',
+              maximumFractionDigits: 2,
+            }).format(value);
+          }
+
+          function autoComputeMonthly(principal, annualRatePercent, years) {
+            const n = years * 12;
+            const r = annualRatePercent / 100 / 12;
+            if (n <= 0) return NaN;
+            if (r === 0) return principal / n;
+            const factor = Math.pow(1 + r, n);
+            return (principal * r * factor) / (factor - 1);
+          }
+
+          function autoRecalc() {
+            const principal = parseFloat(autoAmountInput.value || '0');
+            const rate = parseFloat(autoRateInput.value || '0');
+            const years = parseFloat(autoTermInput.value || '0');
+
+            if (!principal || !rate || !years) {
+              autoMonthlyEl.textContent = '—';
+              autoTotalEl.textContent = '—';
+              autoInterestEl.textContent = '—';
+              const principalLabel = document.querySelector('[data-calc-principal]');
+              const interestLabel = document.querySelector('[data-calc-interest]');
+              if (principalLabel) principalLabel.textContent = '—';
+              if (interestLabel) interestLabel.textContent = '—';
+              if (autoChartCanvas && autoBreakdownChart) {
+                autoBreakdownChart.data.datasets[0].data = [0, 0];
+                autoBreakdownChart.update();
+              }
+              return;
+            }
+
+            const monthly = autoComputeMonthly(principal, rate, years);
+            const total = monthly * years * 12;
+            const interest = total - principal;
+
+            autoMonthlyEl.textContent = autoFormatCurrency(monthly);
+            autoTotalEl.textContent = autoFormatCurrency(total);
+            autoInterestEl.textContent = autoFormatCurrency(interest);
+            const principalLabel = document.querySelector('[data-calc-principal]');
+            const interestLabel = document.querySelector('[data-calc-interest]');
+            if (principalLabel) principalLabel.textContent = autoFormatCurrency(principal);
+            if (interestLabel) interestLabel.textContent = autoFormatCurrency(interest);
+
+            if (autoChartCanvas && typeof Chart !== 'undefined') {
+              if (!autoBreakdownChart) {
+                autoBreakdownChart = new Chart(autoChartCanvas, {
+                  type: 'doughnut',
+                  data: {
+                    labels: ['Principal', 'Interest'],
+                    datasets: [{
+                      data: [principal, interest],
+                      backgroundColor: ['#047857', '#f97316'],
+                      borderWidth: 1,
+                    }],
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: { position: 'bottom', labels: { font: { size: 10 }, color: '#94a3b8' } },
+                    },
+                  },
+                });
+              } else {
+                autoBreakdownChart.data.datasets[0].data = [principal, interest];
+                autoBreakdownChart.update();
+              }
+            }
+          }
+
+          if (autoCalculateBtn) {
+            autoCalculateBtn.addEventListener('click', autoRecalc);
+          }
+          if (autoResetBtn) {
+            autoResetBtn.addEventListener('click', () => {
+              autoAmountInput.value = '';
+              autoRateInput.value = '';
+              autoTermInput.value = '';
+              autoRecalc();
+            });
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
+

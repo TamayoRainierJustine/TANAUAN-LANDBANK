@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LandBank Loan Services Portal</title>
+    <!-- Favicon using LandBank logo -->
+    <link rel="icon" type="image/png" href="/assets/landbank-logo.png" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              landbank: {
+                green: '#007a33',
+                dark: '#00441f',
+                gold: '#c9a13a'
+              }
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+
+    </style>
+  </head>
+  <body class="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-100 text-slate-900">
+    <!-- Top-level shell -->
+    <div class="min-h-screen flex flex-col">
+      <!-- Navigation / Header -->
+      <header
+        class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-emerald-900/5 shadow-sm"
+      >
+        <div
+          class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8"
+        >
+          <div class="flex items-center gap-3">
+            <div class="flex h-12 items-center">
+              <img
+                src="/assets/landbank-logo.png"
+                alt="LandBank logo"
+                class="h-12 w-auto object-contain"
+              />
+            </div>
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-700">
+                LANDBANK
+              </p>
+              <p class="text-xs font-medium text-slate-800">
+                Loan Services Portal
+              </p>
+            </div>
+          </div>
+
+          <nav class="hidden items-center gap-6 text-xs font-medium text-slate-600 sm:flex">
+            <a href="#hero" class="hover:text-emerald-700 transition-colors">Overview</a>
+            <a href="#services" class="hover:text-emerald-700 transition-colors">Loan Services</a>
+            <a href="#why" class="hover:text-emerald-700 transition-colors">Why LandBank</a>
+            <a href="/faqs-sbl.html" class="hover:text-emerald-700 transition-colors">FAQ</a>
+            <a href="#contact" class="hover:text-emerald-700 transition-colors">Contact</a>
+          </nav>
+
+          <div class="hidden sm:flex items-center gap-2">
+            <span
+              class="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-[11px] font-medium text-emerald-800"
+            >
+              <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+              Secure Online Access
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main content wrapper -->
+      <main class="flex-1">
+        <!-- Hero Section -->
+        <section
+          id="hero"
+          class="relative isolate overflow-hidden border-b border-emerald-900/5 min-h-[260px] sm:min-h-[320px]"
+        >
+          <!-- Static background image -->
+          <div
+            id="heroBackground"
+            class="absolute inset-0 bg-cover bg-center"
+            style="background-image: url('/assets/hero-farm.png');"
+          ></div>
+
+          <div
+            class="relative mx-auto flex max-w-6xl flex-col gap-10 px-4 py-14 sm:px-6 lg:flex-row lg:items-center lg:py-18"
+          >
+            <div class="flex-1">
+              <div
+                class="space-y-5 rounded-3xl bg-slate-900/70 backdrop-blur px-5 py-5 sm:px-6 sm:py-6 text-emerald-50 shadow-lg shadow-slate-900/50"
+              >
+                <p class="text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-200">
+                  LAND BANK LOAN SERVICES
+                </p>
+                <h1
+                  class="text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl lg:leading-tight"
+                >
+                  LAND BANK
+                  <span class="block text-landbank-gold">LOAN SERVICES PORTAL</span>
+                </h1>
+                <p class="max-w-xl text-sm sm:text-base text-emerald-50/90 leading-relaxed">
+                  Explore our comprehensive loan programs and financial tools designed for our valued
+                  clients. From home ownership to business expansion, LandBank supports every step of
+                  your journey.
+                </p>
+
+                <div
+                  class="mt-2 inline-flex items-center gap-3 rounded-2xl bg-emerald-950/40 px-4 py-3 shadow-lg shadow-emerald-950/50"
+                >
+                  <div
+                    class="flex h-9 w-9 items-center justify-center rounded-2xl border border-emerald-300/40 bg-emerald-500/20"
+                  >
+                    <span class="text-lg">🏦</span>
+                  </div>
+                  <div class="text-[11px] sm:text-xs">
+                    <p class="font-semibold text-emerald-50">
+                      Your Financial Partner
+                    </p>
+                    <p class="text-emerald-100/85">
+                      Trusted by millions of Filipinos nationwide.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="mt-5 flex flex-wrap items-center gap-3 text-[11px] sm:text-xs">
+                  <a
+                    href="#services"
+                    class="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-landbank-green to-landbank-dark px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-emerald-900/60 transition hover:-translate-y-0.5 hover:shadow-emerald-900/70"
+                  >
+                    View Loan Services
+                  </a>
+                  <a
+                    href="#why"
+                    class="inline-flex items-center justify-center rounded-full border border-emerald-200/80 bg-white/10 px-4 py-2 text-xs font-medium text-emerald-50 backdrop-blur transition hover:bg-white/15"
+                  >
+                    Why choose LandBank?
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex-1">
+              <div
+                class="mx-auto max-w-md rounded-3xl border border-emerald-200/25 bg-emerald-950/20 p-5 shadow-xl shadow-emerald-950/50 backdrop-blur"
+              >
+                <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-100">
+                  Snapshot
+                </p>
+                <p class="mt-1 text-xs text-emerald-50/90">
+                  A unified view of key LandBank loan services in one secure portal.
+                </p>
+
+                <div class="mt-4 grid grid-cols-3 gap-3 text-center text-[11px] text-emerald-50">
+                  <div
+                    class="rounded-2xl bg-emerald-900/40 px-3 py-3 shadow-sm shadow-emerald-950/40"
+                  >
+                    <p class="text-lg font-semibold text-white">60+</p>
+                    <p class="mt-0.5 tracking-[0.2em] uppercase text-[10px] text-emerald-200">
+                      Years
+                    </p>
+                  </div>
+                  <div
+                    class="rounded-2xl bg-emerald-900/40 px-3 py-3 shadow-sm shadow-emerald-950/40"
+                  >
+                    <p class="text-lg font-semibold text-white">500+</p>
+                    <p class="mt-0.5 tracking-[0.2em] uppercase text-[10px] text-emerald-200">
+                      Branches
+                    </p>
+                  </div>
+                  <div
+                    class="rounded-2xl bg-emerald-900/40 px-3 py-3 shadow-sm shadow-emerald-950/40"
+                  >
+                    <p class="text-lg font-semibold text-white">24/7</p>
+                    <p class="mt-0.5 tracking-[0.2em] uppercase text-[10px] text-emerald-200">
+                      Support
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Loan Services Section -->
+        <section id="services" class="border-b border-emerald-900/5 bg-slate-50/70">
+          <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+            <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2
+                  class="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-700 sm:text-[11px]"
+                >
+                  Loan Services
+                </h2>
+                <p class="mt-1 text-lg font-semibold text-slate-900 sm:text-xl">
+                  Tailored lending solutions for every goal.
+                </p>
+              </div>
+              <p class="max-w-md text-xs text-slate-600">
+                Discover flexible, transparent, and inclusive loan products designed to support
+                individuals, entrepreneurs, and communities throughout the Philippines.
+              </p>
+            </div>
+
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <!-- Home Loan -->
+              <a href="/home-loan-requirements.html" class="block">
+                <article
+                  class="group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-900/20 cursor-pointer"
+                >
+                  <div
+                    class="pointer-events-none absolute inset-0 bg-[url('/assets/home-loan-house.png')] bg-cover bg-center opacity-80 group-hover:opacity-90 transition-opacity duration-200"
+                  ></div>
+                  <div class="relative flex flex-col">
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/90 text-white text-xs shadow-sm shadow-emerald-900/40"
+                      >
+                        🏠
+                      </div>
+                      <h3 class="text-sm font-semibold text-white">
+                        Home Loan
+                      </h3>
+                    </div>
+                    <p class="mt-2 text-xs text-emerald-50/90">
+                      View detailed requirements for applying for a LandBank Home Loan, organized by document
+                      type and employment category.
+                    </p>
+                  </div>
+                </article>
+              </a>
+
+              <!-- Small Business Loan -->
+              <a href="/small-business-loan-requirements.html" class="block">
+                <article
+                  class="group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-900/20 cursor-pointer"
+                >
+                  <div
+                    class="pointer-events-none absolute inset-0 bg-[url('/assets/small-business-bg.png')] bg-cover bg-center opacity-80 group-hover:opacity-90 transition-opacity duration-200"
+                  ></div>
+                  <div class="relative flex flex-col">
+                    <div class="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/90 text-white shadow-sm shadow-emerald-900/40">
+                      <span class="text-lg">🏢</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-white">
+                      Small Business Loan
+                    </h3>
+                    <p class="mt-1 text-xs text-emerald-50/90">
+                      View Small Business Loan (SBL) features and requirements for eligible MSME depositors.
+                    </p>
+                  </div>
+                </article>
+              </a>
+
+              <!-- Auto Loan -->
+              <a href="/auto-loan-requirements.html" class="block">
+                <article
+                  class="group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-900/20 cursor-pointer"
+                >
+                  <div
+                    class="pointer-events-none absolute inset-0 bg-[url('/assets/auto-loan-bg.png')] bg-cover bg-center opacity-80 group-hover:opacity-90 transition-opacity duration-200"
+                  ></div>
+                  <div class="relative flex flex-col">
+                    <div class="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/90 text-white shadow-sm shadow-emerald-900/40">
+                      <span class="text-lg">🚗</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-white">
+                      Auto Loan
+                    </h3>
+                    <p class="mt-1 text-xs text-emerald-50/90">
+                      View detailed requirements and FAQs for LandBank Auto Loan, including income and vehicle
+                      documentation.
+                    </p>
+                  </div>
+                </article>
+              </a>
+
+              <!-- Loan Calculator -->
+              <a href="/loan-calculator.html" class="block">
+                <article
+                  class="group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-900/20"
+                >
+                  <div
+                    class="pointer-events-none absolute inset-0 bg-[url('/assets/loan-calculator-bg.png')] bg-cover bg-center opacity-80 group-hover:opacity-90 transition-opacity duration-200"
+                  ></div>
+                  <div class="relative flex flex-col">
+                    <div class="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/90 text-white shadow-sm shadow-emerald-900/40">
+                      <span class="text-lg">🧮</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-white">
+                      Loan Calculator
+                    </h3>
+                    <p class="mt-1 text-xs text-emerald-50/90">
+                      Click to open the interactive calculator and demonstrate how monthly payments and total
+                      interest change in real time.
+                    </p>
+                  </div>
+                </article>
+              </a>
+
+              <!-- FAQs -->
+              <a href="/faqs-sbl.html" class="block">
+                <article
+                  class="group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-900/20 sm:col-span-2 lg:col-span-1"
+                >
+                  <div
+                    class="pointer-events-none absolute inset-0 bg-[url('/assets/faqs-bg.png')] bg-cover bg-center opacity-80 group-hover:opacity-90 transition-opacity duration-200"
+                  ></div>
+                  <div class="relative flex flex-col">
+                    <div class="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/90 text-white shadow-sm shadow-emerald-900/40">
+                      <span class="text-lg">❓</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-white">
+                      Frequently Asked Questions
+                    </h3>
+                    <p class="mt-1 text-xs text-emerald-50/90">
+                      Tap to jump to the interactive FAQ accordion and address common client questions.
+                    </p>
+                  </div>
+                </article>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Why Choose LandBank -->
+        <section id="why" class="bg-white">
+          <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+            <div class="max-w-xl">
+              <h2
+                class="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-700 sm:text-[11px]"
+              >
+                Why Choose LandBank
+              </h2>
+              <p class="mt-2 text-lg font-semibold text-slate-900 sm:text-xl">
+                A trusted government financial institution with a mandate to serve.
+              </p>
+              <p class="mt-2 text-xs text-slate-600 sm:text-sm">
+                LandBank combines nationwide reach, secure digital channels, and responsible lending
+                practices to support individuals, communities, and key sectors of the economy.
+              </p>
+            </div>
+
+            <div class="mt-6 grid gap-4 sm:grid-cols-3">
+              <div
+                class="flex flex-col items-center rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-4 text-center shadow-sm shadow-emerald-900/5"
+              >
+                <p class="text-xl font-bold text-emerald-800">
+                  60+
+                </p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.18em] text-emerald-900/70">
+                  Years of Service
+                </p>
+                <p class="mt-2 text-[11px] text-emerald-900/70">
+                  Decades of experience in development-oriented and inclusive banking.
+                </p>
+              </div>
+
+              <div
+                class="flex flex-col items-center rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-4 text-center shadow-sm shadow-emerald-900/5"
+              >
+                <p class="text-xl font-bold text-emerald-800">
+                  500+
+                </p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.18em] text-emerald-900/70">
+                  Branches Nationwide
+                </p>
+                <p class="mt-2 text-[11px] text-emerald-900/70">
+                  Accessible branches and touchpoints across the country.
+                </p>
+              </div>
+
+              <div
+                class="flex flex-col items-center rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-4 text-center shadow-sm shadow-emerald-900/5"
+              >
+                <p class="text-xl font-bold text-emerald-800">
+                  24/7
+                </p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.18em] text-emerald-900/70">
+                  Customer Support
+                </p>
+                <p class="mt-2 text-[11px] text-emerald-900/70">
+                  Dedicated channels to assist you from inquiry to loan release.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer
+        id="contact"
+        class="border-t border-emerald-900/10 bg-slate-950 text-slate-200"
+      >
+        <div class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+          <div
+            class="border-t border-slate-800 pt-4 text-[11px] text-slate-500 flex items-center justify-center"
+          >
+            <p>© 2026 LandBank Loan Services Portal. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LandBank Loan Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              landbank: {
+                green: '#007a33',
+                dark: '#00441f',
+                gold: '#c9a13a',
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-100 text-slate-900">
+    <div class="min-h-screen flex flex-col">
+      <!-- Simple header -->
+      <header
+        class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-emerald-900/5 shadow-sm"
+      >
+        <div
+          class="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8"
+        >
+          <div class="flex items-center gap-3">
+            <div class="flex h-12 items-center">
+              <img
+                src="assets/landbank-logo.png"
+                alt="LandBank logo"
+                class="h-12 w-auto object-contain"
+              />
+            </div>
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-700">
+                LANDBANK
+              </p>
+              <p class="text-xs font-medium text-slate-800">
+                Loan Calculator Demo
+              </p>
+            </div>
+          </div>
+          <a
+            href="index.html#services"
+            class="hidden sm:inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-medium text-emerald-800 hover:bg-emerald-100 hover:shadow-md hover:-translate-y-0.5 transition"
+          >
+            ← Back to Loan Services
+          </a>
+        </div>
+      </header>
+
+      <!-- Calculator content -->
+      <main class="flex-1">
+        <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+          <div class="max-w-xl mb-6">
+            <h1 class="text-lg sm:text-2xl font-semibold text-slate-900">
+              Loan Calculator
+            </h1>
+            <p class="mt-2 text-xs sm:text-sm text-slate-600">
+              Use this interactive calculator to demonstrate how monthly payments, total payments, and
+              total interest change based on loan amount, interest rate, and term.
+            </p>
+          </div>
+
+          <div
+            class="rounded-3xl bg-white shadow-xl shadow-emerald-900/10 border border-emerald-100 p-6 sm:p-7 transition hover:-translate-y-1 hover:shadow-emerald-900/20"
+          >
+            <div class="grid gap-4 sm:grid-cols-3">
+              <div class="sm:col-span-3">
+                <label for="loanAmount" class="block text-xs font-medium text-slate-700">
+                  Loan Amount (₱)
+                </label>
+                <input
+                  id="loanAmount"
+                  type="number"
+                  min="0"
+                  step="1000"
+                  placeholder="e.g. 1000000"
+                  class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40"
+                />
+              </div>
+
+              <div>
+                <label for="interestRate" class="block text-xs font-medium text-slate-700">
+                  Interest Rate (% per year)
+                </label>
+                <input
+                  id="interestRate"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="e.g. 6"
+                  class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40"
+                />
+              </div>
+
+              <div>
+                <label for="loanTerm" class="block text-xs font-medium text-slate-700">
+                  Loan Term (years)
+                </label>
+                <input
+                  id="loanTerm"
+                  type="number"
+                  min="1"
+                  step="1"
+                  placeholder="e.g. 10"
+                  class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40"
+                />
+              </div>
+
+              <div class="flex items-end">
+                <button
+                  id="calcReset"
+                  type="button"
+                  class="w-full rounded-xl bg-gradient-to-r from-landbank-green to-landbank-dark px-3 py-2 text-xs font-semibold text-white shadow-md shadow-emerald-900/40 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-900/50 transition"
+                >
+                  Clear &amp; Recalculate
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-6 rounded-2xl bg-slate-50 border border-slate-200 px-4 py-4">
+              <h2 class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+                Results
+              </h2>
+              <div class="mt-3 grid gap-3 sm:grid-cols-3 text-sm">
+                <div>
+                  <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wide">
+                    Monthly Payment
+                  </p>
+                  <p id="resultMonthly" class="mt-1 text-base font-semibold text-emerald-700">
+                    —
+                  </p>
+                </div>
+                <div>
+                  <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wide">
+                    Total Payment
+                  </p>
+                  <p id="resultTotal" class="mt-1 text-base font-semibold text-slate-800">
+                    —
+                  </p>
+                </div>
+                <div>
+                  <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wide">
+                    Total Interest
+                  </p>
+                  <p id="resultInterest" class="mt-1 text-base font-semibold text-slate-800">
+                    —
+                  </p>
+                </div>
+              </div>
+              <p id="calcHint" class="mt-3 text-[11px] text-slate-500">
+                Start by entering loan amount, interest rate, and term.
+              </p>
+
+              <!-- Chart container -->
+              <div class="mt-4">
+                <p class="text-[11px] font-medium text-slate-600 mb-1">
+                  Principal vs. Interest (Estimated)
+                </p>
+                <div class="h-40 sm:h-48">
+                  <canvas id="breakdownChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const amountInput = document.getElementById('loanAmount');
+        const rateInput = document.getElementById('interestRate');
+        const termInput = document.getElementById('loanTerm');
+        const resetBtn = document.getElementById('calcReset');
+
+        const monthlyEl = document.getElementById('resultMonthly');
+        const totalEl = document.getElementById('resultTotal');
+        const interestEl = document.getElementById('resultInterest');
+        const hintEl = document.getElementById('calcHint');
+
+        const chartCanvas = document.getElementById('breakdownChart');
+        let breakdownChart = null;
+
+        function formatCurrency(value) {
+          if (!isFinite(value)) return '—';
+          return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+            maximumFractionDigits: 2,
+          }).format(value);
+        }
+
+        function computeMonthlyPayment(principal, annualRatePercent, years) {
+          const n = years * 12;
+          const r = annualRatePercent / 100 / 12;
+
+          if (n <= 0) return NaN;
+          if (r === 0) return principal / n;
+
+          const factor = Math.pow(1 + r, n);
+          return (principal * r * factor) / (factor - 1);
+        }
+
+        function recalc() {
+          const principal = parseFloat(amountInput.value || '0');
+          const rate = parseFloat(rateInput.value || '0');
+          const years = parseFloat(termInput.value || '0');
+
+          if (!principal || !rate || !years) {
+            monthlyEl.textContent = '—';
+            totalEl.textContent = '—';
+            interestEl.textContent = '—';
+            hintEl.textContent =
+              'Start by entering loan amount, interest rate, and term.';
+
+            // Reset chart
+            if (breakdownChart) {
+              breakdownChart.data.datasets[0].data = [0, 0];
+              breakdownChart.update();
+            }
+            return;
+          }
+
+          const monthly = computeMonthlyPayment(principal, rate, years);
+          const total = monthly * years * 12;
+          const interest = total - principal;
+
+          monthlyEl.textContent = formatCurrency(monthly);
+          totalEl.textContent = formatCurrency(total);
+          interestEl.textContent = formatCurrency(interest);
+          hintEl.textContent =
+            'These values are estimates only and for illustration purposes.';
+
+          // Update chart
+          if (!breakdownChart) {
+            breakdownChart = new Chart(chartCanvas, {
+              type: 'doughnut',
+              data: {
+                labels: ['Principal', 'Interest'],
+                datasets: [
+                  {
+                    data: [principal, interest],
+                    backgroundColor: ['#047857', '#f97316'],
+                    borderWidth: 1,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                    labels: {
+                      font: { size: 10 },
+                    },
+                  },
+                },
+              },
+            });
+          } else {
+            breakdownChart.data.datasets[0].data = [principal, interest];
+            breakdownChart.update();
+          }
+        }
+
+        ['input', 'change'].forEach((evt) => {
+          amountInput.addEventListener(evt, recalc);
+          rateInput.addEventListener(evt, recalc);
+          termInput.addEventListener(evt, recalc);
+        });
+
+        resetBtn.addEventListener('click', () => {
+          amountInput.value = '';
+          rateInput.value = '';
+          termInput.value = '';
+          recalc();
+        });
+
+        recalc();
+      });
+    </script>
+  </body>
+</html>
+

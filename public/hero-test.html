@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hero Slideshow Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      .hero-shell {
+        position: relative;
+        height: 100vh;
+        overflow: hidden;
+      }
+      #heroTestBackground {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        transition: opacity 0.7s ease;
+      }
+      .hero-overlay {
+        position: relative;
+        z-index: 1;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at top left, rgba(255,255,255,0.75), rgba(15,118,110,0.55));
+      }
+      .hero-card {
+        padding: 2rem 2.5rem;
+        border-radius: 1.5rem;
+        background: rgba(15,23,42,0.85);
+        color: #ecfdf5;
+        box-shadow: 0 28px 80px rgba(15,23,42,0.75);
+        max-width: 560px;
+        text-align: center;
+      }
+      .hero-card h1 {
+        margin: 0 0 0.75rem;
+        font-size: 1.8rem;
+      }
+      .hero-card p {
+        margin: 0;
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+      .hero-debug {
+        position: absolute;
+        left: 1rem;
+        bottom: 1rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        background: rgba(15,23,42,0.8);
+        color: #a7f3d0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero-shell">
+      <div id="heroTestBackground"></div>
+      <div class="hero-overlay">
+        <div class="hero-card">
+          <h1>Hero Slideshow Test</h1>
+          <p>Images should gently change every 4 seconds using the farmer and fisher photos.</p>
+        </div>
+      </div>
+      <div id="heroDebug" class="hero-debug">Loading slideshow…</div>
+    </div>
+
+    <script>
+      (function () {
+        var bg = document.getElementById('heroTestBackground');
+        var debug = document.getElementById('heroDebug');
+        if (!bg) {
+          if (debug) debug.textContent = 'Missing #heroTestBackground element.';
+          return;
+        }
+
+        var images = [
+          '/assets/hero-farm.png',
+          '/assets/hero-farmer-1.jpg',
+          '/assets/hero-farmer-2.jpg',
+          '/assets/hero-farmer-3.jpg',
+          '/assets/hero-fisher-1.jpg',
+          '/assets/hero-fisher-2.jpg'
+        ];
+
+        var idx = 0;
+        var intervalMs = 4000;
+
+        function setImage() {
+          bg.style.opacity = 0;
+          // small timeout so opacity transition is visible
+          setTimeout(function () {
+            bg.style.backgroundImage = "url('" + images[idx] + "')";
+            bg.style.opacity = 1;
+            if (debug) debug.textContent = 'Showing: ' + images[idx];
+          }, 200);
+        }
+
+        setImage();
+        setInterval(function () {
+          idx = (idx + 1) % images.length;
+          setImage();
+        }, intervalMs);
+      })();
+    </script>
+  </body>
+</html>
+
