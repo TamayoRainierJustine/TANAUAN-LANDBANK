@@ -4,8 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LandBank Loan Services Portal</title>
+    <meta name="description" content="Explore LandBank loan programs: Home Loan, Auto Loan, Small Business Loan. Requirements, calculator, and FAQs in one secure portal." />
+    <meta name="keywords" content="LandBank, loan services, home loan, auto loan, small business loan, Philippines, loan calculator, loan requirements" />
+    <!-- Open Graph / sharing -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="LandBank Loan Services Portal" />
+    <meta property="og:description" content="Explore LandBank loan programs: Home Loan, Auto Loan, Small Business Loan. Requirements, calculator, and FAQs in one secure portal." />
+    <meta property="og:image" content="/assets/landbank-logo.png" />
     <!-- Favicon using LandBank logo -->
     <link rel="icon" type="image/png" href="/assets/landbank-logo.png" />
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -18,6 +29,9 @@
                 dark: '#00441f',
                 gold: '#c9a13a'
               }
+            },
+            fontFamily: {
+              heading: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
             }
           }
         }
@@ -27,10 +41,118 @@
       html {
         scroll-behavior: smooth;
       }
-
+      .font-heading { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+      /* Skip link: visible on focus for accessibility */
+      .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 0.5rem;
+        z-index: 100;
+        padding: 0.5rem 1rem;
+        background: #007a33;
+        color: white;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        transition: top 0.2s ease;
+      }
+      .skip-link:focus {
+        top: 0.5rem;
+        outline: 2px solid #c9a13a;
+        outline-offset: 2px;
+      }
+      /* Back to top button */
+      #backToTop {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        z-index: 50;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 9999px;
+        background: #007a33;
+        color: white;
+        border: none;
+        box-shadow: 0 4px 14px rgba(0, 122, 51, 0.4);
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s, transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+      }
+      #backToTop.show {
+        opacity: 1;
+        visibility: visible;
+      }
+      #backToTop:hover {
+        background: #00441f;
+        transform: translateY(-2px);
+      }
+      #backToTop:focus {
+        outline: 2px solid #c9a13a;
+        outline-offset: 2px;
+      }
+      /* Card/button focus ring for keyboard users */
+      .btn-focus:focus-visible,
+      a:focus-visible article {
+        outline: 2px solid #007a33;
+        outline-offset: 2px;
+      }
+      /* Section dividers */
+      .section-divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0, 122, 51, 0.15), transparent);
+        margin: 0;
+      }
+      .section-divider-wave {
+        height: 24px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 24' fill='none'%3E%3Cpath d='M0 12 Q300 0 600 12 T1200 12' stroke='%23007a33' stroke-opacity='0.12' stroke-width='1' fill='none'/%3E%3C/svg%3E") repeat-x center;
+      }
+      /* Hero overlay (subtle pattern + gradient) */
+      .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(0, 68, 31, 0.35) 0%, rgba(0, 0, 0, 0.25) 100%);
+        pointer-events: none;
+      }
+      .hero-overlay-pattern {
+        position: absolute;
+        inset: 0;
+        opacity: 0.08;
+        background-image: linear-gradient(135deg, rgba(255,255,255,0.15) 25%, transparent 25%), linear-gradient(225deg, rgba(255,255,255,0.1) 25%, transparent 25%);
+        background-size: 24px 24px;
+        pointer-events: none;
+      }
+      /* Loan card hover: scale + glow */
+      .loan-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+      }
+      .loan-card:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: 0 24px 48px -12px rgba(0, 68, 31, 0.25), 0 0 0 1px rgba(0, 122, 51, 0.15);
+      }
+      /* Scroll-triggered fade-in for cards */
+      .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+      .animate-on-scroll.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      /* Nav active state */
+      nav a.nav-active {
+        color: #047857;
+        font-weight: 600;
+      }
     </style>
   </head>
   <body class="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-100 text-slate-900">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <!-- Top-level shell -->
     <div class="min-h-screen flex flex-col">
       <!-- Navigation / Header -->
@@ -58,19 +180,19 @@
             </div>
           </div>
 
-          <nav class="hidden items-center gap-6 text-xs font-medium text-slate-600 sm:flex">
-            <a href="#hero" class="hover:text-emerald-700 transition-colors">Overview</a>
-            <a href="#services" class="hover:text-emerald-700 transition-colors">Loan Services</a>
-            <a href="#why" class="hover:text-emerald-700 transition-colors">Why LandBank</a>
+          <nav class="hidden items-center gap-6 text-xs font-medium text-slate-600 sm:flex font-heading" aria-label="Main navigation">
+            <a href="#hero" data-section="hero" class="nav-link hover:text-emerald-700 transition-colors">Overview</a>
+            <a href="#services" data-section="services" class="nav-link hover:text-emerald-700 transition-colors">Loan Services</a>
+            <a href="#why" data-section="why" class="nav-link hover:text-emerald-700 transition-colors">Why LandBank</a>
             <a href="/faqs-sbl.html" class="hover:text-emerald-700 transition-colors">FAQ</a>
-            <a href="#contact" class="hover:text-emerald-700 transition-colors">Contact</a>
+            <a href="#contact" data-section="contact" class="nav-link hover:text-emerald-700 transition-colors">Contact</a>
           </nav>
 
-          <div class="hidden sm:flex items-center gap-2">
+          <div class="hidden sm:flex items-center gap-2" role="status" aria-label="Secure connection">
             <span
               class="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-[11px] font-medium text-emerald-800"
             >
-              <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+              <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span>
               Secure Online Access
             </span>
           </div>
@@ -78,7 +200,7 @@
       </header>
 
       <!-- Main content wrapper -->
-      <main class="flex-1">
+      <main id="main-content" class="flex-1" role="main">
         <!-- Hero Section -->
         <section
           id="hero"
@@ -90,6 +212,8 @@
             class="absolute inset-0 bg-cover bg-center"
             style="background-image: url('/assets/hero-farm.png');"
           ></div>
+          <div class="hero-overlay" aria-hidden="true"></div>
+          <div class="hero-overlay-pattern" aria-hidden="true"></div>
 
           <div
             class="relative mx-auto flex max-w-6xl flex-col gap-10 px-4 py-14 sm:px-6 lg:flex-row lg:items-center lg:py-18"
@@ -102,7 +226,7 @@
                   LAND BANK LOAN SERVICES
                 </p>
                 <h1
-                  class="text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl lg:leading-tight"
+                  class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl lg:leading-tight"
                 >
                   LAND BANK
                   <span class="block text-landbank-gold">LOAN SERVICES PORTAL</span>
@@ -134,13 +258,13 @@
                 <div class="mt-5 flex flex-wrap items-center gap-3 text-[11px] sm:text-xs">
                   <a
                     href="#services"
-                    class="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-landbank-green to-landbank-dark px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-emerald-900/60 transition hover:-translate-y-0.5 hover:shadow-emerald-900/70"
+                    class="btn-focus inline-flex items-center justify-center rounded-full bg-gradient-to-r from-landbank-green to-landbank-dark px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-emerald-900/60 transition hover:-translate-y-0.5 hover:shadow-emerald-900/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
                   >
                     View Loan Services
                   </a>
                   <a
                     href="#why"
-                    class="inline-flex items-center justify-center rounded-full border border-emerald-200/80 bg-white/10 px-4 py-2 text-xs font-medium text-emerald-50 backdrop-blur transition hover:bg-white/15"
+                    class="btn-focus inline-flex items-center justify-center rounded-full border border-emerald-200/80 bg-white/10 px-4 py-2 text-xs font-medium text-emerald-50 backdrop-blur transition hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
                   >
                     Why choose LandBank?
                   </a>
@@ -190,17 +314,18 @@
           </div>
         </section>
 
+        <div class="section-divider" aria-hidden="true"></div>
         <!-- Loan Services Section -->
         <section id="services" class="border-b border-emerald-900/5 bg-slate-50/70">
           <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
             <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h2
-                  class="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-700 sm:text-[11px]"
+                  class="font-heading text-xs font-semibold uppercase tracking-[0.28em] text-emerald-700 sm:text-[11px]"
                 >
                   Loan Services
                 </h2>
-                <p class="mt-1 text-lg font-semibold text-slate-900 sm:text-xl">
+                <p class="font-heading mt-1 text-lg font-semibold text-slate-900 sm:text-xl">
                   Tailored lending solutions for every goal.
                 </p>
               </div>
@@ -214,7 +339,7 @@
               <!-- Home Loan -->
               <a href="/home-loan-requirements.html" class="block">
                 <article
-                  class="group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-900/20 cursor-pointer"
+                  class="loan-card animate-on-scroll group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 cursor-pointer"
                 >
                   <div
                     class="pointer-events-none absolute inset-0 bg-[url('/assets/home-loan-house.png')] bg-cover bg-center opacity-80 group-hover:opacity-90 transition-opacity duration-200"
@@ -241,7 +366,7 @@
               <!-- Small Business Loan -->
               <a href="/small-business-loan-requirements.html" class="block">
                 <article
-                  class="group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-900/20 cursor-pointer"
+                  class="loan-card animate-on-scroll group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 cursor-pointer"
                 >
                   <div
                     class="pointer-events-none absolute inset-0 bg-[url('/assets/small-business-bg.png')] bg-cover bg-center opacity-80 group-hover:opacity-90 transition-opacity duration-200"
@@ -263,7 +388,7 @@
               <!-- Auto Loan -->
               <a href="/auto-loan-requirements.html" class="block">
                 <article
-                  class="group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-900/20 cursor-pointer"
+                  class="loan-card animate-on-scroll group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 cursor-pointer"
                 >
                   <div
                     class="pointer-events-none absolute inset-0 bg-[url('/assets/auto-loan-bg.png')] bg-cover bg-center opacity-80 group-hover:opacity-90 transition-opacity duration-200"
@@ -286,7 +411,7 @@
               <!-- Loan Calculator -->
               <a href="/loan-calculator.html" class="block">
                 <article
-                  class="group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-900/20"
+                  class="loan-card animate-on-scroll group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5"
                 >
                   <div
                     class="pointer-events-none absolute inset-0 bg-[url('/assets/loan-calculator-bg.png')] bg-cover bg-center opacity-80 group-hover:opacity-90 transition-opacity duration-200"
@@ -309,7 +434,7 @@
               <!-- FAQs -->
               <a href="/faqs-sbl.html" class="block">
                 <article
-                  class="group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-900/20 sm:col-span-2 lg:col-span-1"
+                  class="loan-card animate-on-scroll group relative overflow-hidden flex flex-col justify-end rounded-2xl border border-slate-200 bg-slate-900/80 p-5 sm:p-6 min-h-[190px] sm:min-h-[220px] shadow-sm shadow-emerald-900/5 sm:col-span-2 lg:col-span-1"
                 >
                   <div
                     class="pointer-events-none absolute inset-0 bg-[url('/assets/faqs-bg.png')] bg-cover bg-center opacity-80 group-hover:opacity-90 transition-opacity duration-200"
@@ -331,16 +456,17 @@
           </div>
         </section>
 
+        <div class="section-divider-wave" aria-hidden="true"></div>
         <!-- Why Choose LandBank -->
         <section id="why" class="bg-white">
           <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
             <div class="max-w-xl">
               <h2
-                class="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-700 sm:text-[11px]"
+                class="font-heading text-xs font-semibold uppercase tracking-[0.28em] text-emerald-700 sm:text-[11px]"
               >
                 Why Choose LandBank
               </h2>
-              <p class="mt-2 text-lg font-semibold text-slate-900 sm:text-xl">
+              <p class="font-heading mt-2 text-lg font-semibold text-slate-900 sm:text-xl">
                 A trusted government financial institution with a mandate to serve.
               </p>
               <p class="mt-2 text-xs text-slate-600 sm:text-sm">
@@ -392,6 +518,13 @@
                 </p>
               </div>
             </div>
+            <!-- Testimonial / trust line -->
+            <div class="mt-10 rounded-2xl border border-emerald-100 bg-gradient-to-r from-emerald-50/80 to-slate-50/80 px-5 py-4 text-center shadow-sm">
+              <p class="font-heading text-sm font-medium text-slate-700 sm:text-base">
+                “LandBank has been our partner for growth—from our first business loan to our home loan. Transparent process and reliable support.”
+              </p>
+              <p class="mt-2 text-[11px] uppercase tracking-widest text-emerald-700/80">— Valued client</p>
+            </div>
           </div>
         </section>
       </main>
@@ -400,16 +533,51 @@
       <footer
         id="contact"
         class="border-t border-emerald-900/10 bg-slate-950 text-slate-200"
+        role="contentinfo"
       >
         <div class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 text-sm">
+            <div>
+              <p class="font-semibold text-emerald-100">Contact</p>
+              <p class="mt-1 text-slate-400">LandBank Hotline: (02) 8-405-7000</p>
+              <p class="text-slate-400">Toll-free: 1-800-10-405-7000</p>
+              <a href="https://www.landbank.com" class="mt-1 inline-block text-emerald-300 hover:text-emerald-200" target="_blank" rel="noopener">landbank.com</a>
+            </div>
+            <div>
+              <p class="font-semibold text-emerald-100">Quick links</p>
+              <a href="#hero" class="mt-1 block text-slate-400 hover:text-white">Overview</a>
+              <a href="#services" class="block text-slate-400 hover:text-white">Loan Services</a>
+              <a href="/faqs-sbl.html" class="block text-slate-400 hover:text-white">FAQ</a>
+            </div>
+            <div class="sm:col-span-2">
+              <p class="font-semibold text-emerald-100">Your data is secure</p>
+              <p class="mt-1 text-[11px] text-slate-500">This portal is for information only. We do not store loan applications here. For official applications, visit your nearest LandBank branch or the official LandBank website.</p>
+            </div>
+          </div>
           <div
-            class="border-t border-slate-800 pt-4 text-[11px] text-slate-500 flex items-center justify-center"
+            class="mt-6 border-t border-slate-800 pt-4 text-[11px] text-slate-500 flex flex-wrap items-center justify-center gap-x-4 gap-y-1"
           >
             <p>© 2026 LandBank Loan Services Portal. All rights reserved.</p>
+            <a href="https://www.landbank.com/privacy" class="hover:text-slate-400" target="_blank" rel="noopener">Privacy</a>
           </div>
         </div>
       </footer>
     </div>
+    <button type="button" id="backToTop" aria-label="Back to top" title="Back to top">↑</button>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "LandBank Loan Services Portal",
+      "description": "Explore LandBank loan programs: Home Loan, Auto Loan, Small Business Loan. Requirements, calculator, and FAQs.",
+      "url": "https://www.landbank.com",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Land Bank of the Philippines",
+        "url": "https://www.landbank.com"
+      }
+    }
+    </script>
     <script src="/script.js"></script>
   </body>
 </html>

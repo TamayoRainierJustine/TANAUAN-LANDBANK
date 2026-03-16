@@ -150,4 +150,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Back to top button (homepage)
+  const backToTop = document.getElementById('backToTop');
+  if (backToTop) {
+    function toggleBackToTop() {
+      if (window.scrollY > 400) {
+        backToTop.classList.add('show');
+      } else {
+        backToTop.classList.remove('show');
+      }
+    }
+    window.addEventListener('scroll', toggleBackToTop, { passive: true });
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    toggleBackToTop();
+  }
+
+  // Active nav link on scroll (homepage)
+  const navLinks = document.querySelectorAll('.nav-link[data-section]');
+  const sections = document.querySelectorAll('section[id], footer[id]');
+  if (navLinks.length && sections.length) {
+    function updateActiveNav() {
+      const scrollY = window.scrollY + 80;
+      let current = '';
+      sections.forEach((sec) => {
+        const top = sec.offsetTop;
+        const height = sec.offsetHeight;
+        if (scrollY >= top && scrollY < top + height) current = sec.id;
+      });
+      navLinks.forEach((link) => {
+        if (link.getAttribute('data-section') === current) {
+          link.classList.add('nav-active');
+        } else {
+          link.classList.remove('nav-active');
+        }
+      });
+    }
+    window.addEventListener('scroll', updateActiveNav, { passive: true });
+    updateActiveNav();
+  }
+
+  // Scroll-triggered fade-in for cards
+  const animated = document.querySelectorAll('.animate-on-scroll');
+  if (animated.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add('in-view');
+        });
+      },
+      { rootMargin: '0px 0px -40px 0px', threshold: 0.1 }
+    );
+    animated.forEach((el) => observer.observe(el));
+  }
 }); 
