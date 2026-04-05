@@ -3,47 +3,185 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Staff sign in — LANDBANK Tanauan</title>
+    <title>Staff sign in — LANDBANK Tanauan Branch</title>
     <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/png" href="/assets/landbank-logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              landbank: {
+                green: '#007a33',
+                dark: '#00441f',
+                gold: '#c9a13a',
+              },
+            },
+            fontFamily: {
+              heading: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
     <style>
-      body {
+      html {
+        scroll-behavior: smooth;
+      }
+      body.login-page {
+        animation: pageFadeIn 0.45s ease-out forwards;
+      }
+      @keyframes pageFadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      body.landbank-login-bg {
+        position: relative;
+        overflow-x: hidden;
         font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        min-height: 100vh;
+      }
+      body.landbank-login-bg::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -3;
+        background: linear-gradient(90deg, #006633, #0f8a5f, #4caf50, #e8f5e9, #ffffff, #e8f5e9);
+        background-size: 300% 100%;
+        animation: landbankHorizontalFlow 14s ease-in-out infinite alternate;
+      }
+      body.landbank-login-bg::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        opacity: 0.92;
+        pointer-events: none;
+      }
+      @keyframes landbankHorizontalFlow {
+        0% {
+          background-position: 100% 0%;
+        }
+        100% {
+          background-position: 0% 0%;
+        }
+      }
+      .login-glass {
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        background: rgba(255, 255, 255, 0.88);
+        border-radius: 24px;
+        box-shadow: 0 24px 48px rgba(0, 68, 31, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+        animation: loginCardIn 0.65s ease-out 0.05s both;
+      }
+      @keyframes loginCardIn {
+        from {
+          opacity: 0;
+          transform: translateY(18px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      .logo-ring {
+        box-shadow: 0 8px 32px rgba(0, 122, 51, 0.15), 0 0 0 1px rgba(201, 161, 58, 0.25);
       }
     </style>
   </head>
-  <body class="min-h-screen bg-slate-100 flex flex-col items-center justify-center px-4">
-    <div class="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-lg shadow-emerald-900/5">
-      <div class="flex justify-center mb-6">
-        <img src="/assets/landbank-logo.png" alt="" class="h-14 w-auto" width="120" height="56" />
-      </div>
-      <h1 class="text-center text-lg font-semibold text-slate-900">LANDBANK Tanauan Branch</h1>
-      <p class="mt-1 text-center text-xs text-slate-500">Staff access only. Enter the site password.</p>
-
-      <form id="login-form" class="mt-6 space-y-4">
-        <div>
-          <label for="password" class="block text-xs font-medium text-slate-600">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autocomplete="current-password"
-            required
-            class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+  <body class="login-page landbank-login-bg text-slate-900 antialiased">
+    <div class="flex min-h-screen flex-col">
+      <!-- Top bar — matches main site header feel -->
+      <header class="border-b border-emerald-900/10 bg-white/75 backdrop-blur-md">
+        <div class="mx-auto flex max-w-lg items-center justify-center gap-3 px-4 py-4 sm:px-6">
+          <img
+            src="/assets/landbank-logo.png"
+            alt="Land Bank of the Philippines"
+            class="h-11 w-auto object-contain sm:h-12"
+            width="160"
+            height="64"
           />
+          <div class="text-left font-heading">
+            <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-700">LANDBANK</p>
+            <p class="text-xs font-semibold text-slate-800">Tanauan Branch</p>
+          </div>
         </div>
-        <button
-          type="submit"
-          class="w-full rounded-lg bg-emerald-700 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-        >
-          Sign in
-        </button>
-      </form>
-      <p id="login-error" class="mt-3 text-center text-sm text-red-600 hidden" role="alert"></p>
+      </header>
+
+      <main class="flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-6">
+        <div class="login-glass w-full max-w-md border border-white/80 px-6 py-9 sm:px-10 sm:py-10">
+          <!-- Logo mark (larger, centered) -->
+          <div class="flex flex-col items-center">
+            <div class="logo-ring rounded-2xl bg-white p-4 sm:p-5">
+              <img
+                src="/assets/landbank-logo.png"
+                alt=""
+                class="h-16 w-auto object-contain sm:h-[4.5rem]"
+                width="200"
+                height="90"
+                decoding="async"
+              />
+            </div>
+            <h1 class="font-heading mt-6 text-center text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">
+              Staff sign in
+            </h1>
+            <p class="font-heading mt-1 text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-700">
+              Authorized access only
+            </p>
+            <div class="mt-4 h-px w-16 bg-gradient-to-r from-transparent via-landbank-gold to-transparent" aria-hidden="true"></div>
+            <p class="mt-4 max-w-sm text-center text-sm leading-relaxed text-slate-600">
+              Enter the branch site password to continue. This portal is for LANDBANK Tanauan personnel.
+            </p>
+          </div>
+
+          <form id="login-form" class="mt-8 space-y-5">
+            <div>
+              <label for="password" class="font-heading block text-xs font-semibold uppercase tracking-wider text-slate-600"
+                >Password</label
+              >
+              <div class="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                  placeholder="••••••••"
+                  class="w-full border-0 border-l-4 border-l-[#007a33] bg-transparent px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0"
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="font-heading w-full rounded-xl bg-gradient-to-r from-[#007a33] to-[#0d6e3a] py-3.5 text-sm font-bold tracking-wide text-white shadow-lg shadow-emerald-900/25 transition hover:from-[#006629] hover:to-[#00441f] focus:outline-none focus:ring-2 focus:ring-landbank-gold focus:ring-offset-2"
+            >
+              Sign in to portal
+            </button>
+          </form>
+
+          <p id="login-error" class="mt-4 hidden text-center text-sm font-medium text-red-700" role="alert"></p>
+
+          <p class="mt-8 text-center text-[11px] leading-relaxed text-slate-500">
+            <span class="text-landbank-gold" aria-hidden="true">●</span>
+            Land Bank of the Philippines — serving the nation with trust and integrity.
+          </p>
+        </div>
+
+        <p class="mt-8 max-w-md text-center text-[10px] text-slate-500/90">
+          If you were sent here by mistake, please close this page. For access issues, contact your branch administrator.
+        </p>
+      </main>
     </div>
-    <p class="mt-8 text-[11px] text-slate-400">Authorized LandBank personnel only.</p>
 
     <script>
       function safePath(raw) {
