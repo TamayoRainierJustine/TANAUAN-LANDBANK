@@ -48,54 +48,201 @@ function initFirebase() {
   return true;
 }
 
-function rowTemplate(image, caption) {
-  const uploadCol = offlineMode
-    ? ''
-    : `
-      <div>
-        <label class="block text-[11px] font-medium text-slate-600">Upload PNG</label>
-        <input type="file" accept="image/png,image/jpeg,image/webp" class="page-file mt-1 text-xs" />
-      </div>`;
+function updateImagePreview(wrap) {
+  const ta = wrap.querySelector('.page-image');
+  const img = wrap.querySelector('.page-preview');
+  const placeholder = wrap.querySelector('.drop-placeholder');
+  if (!ta || !img) return;
+  const v = ta.value.trim();
+  if (!v) {
+    img.classList.add('hidden');
+    img.removeAttribute('src');
+    if (placeholder) placeholder.classList.remove('hidden');
+    return;
+  }
+  if (placeholder) placeholder.classList.add('hidden');
+  img.classList.remove('hidden');
+  img.alt = 'Preview';
+  img.src = v;
+  img.onerror = () => {
+    img.classList.add('hidden');
+    if (placeholder) placeholder.classList.remove('hidden');
+  };
+}
 
-  const wrap = document.createElement('div');
-  wrap.className = 'rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2';
-  wrap.innerHTML = `
-    <div class="flex flex-wrap gap-2 items-end">
-      <div class="flex-1 min-w-[200px]">
-        <label class="block text-[11px] font-medium text-slate-600">Image URL</label>
-        <input type="text" class="page-image mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value="${escapeAttr(image)}" placeholder="/assets/org-chart-1.png" />
-      </div>
-      <div class="w-40">
-        <label class="block text-[11px] font-medium text-slate-600">Caption</label>
-        <input type="text" class="page-caption mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value="${escapeAttr(caption)}" placeholder="Page 1" />
-      </div>
-      ${uploadCol}
-      <button type="button" class="remove-row rounded-lg border border-red-200 bg-white px-3 py-2 text-xs text-red-700 hover:bg-red-50">Remove</button>
-    </div>
-  `;
-  const fileInput = wrap.querySelector('.page-file');
-  const urlInput = wrap.querySelector('.page-image');
-  fileInput?.addEventListener('change', async () => {
-    const f = fileInput.files?.[0];
-    if (!f || !storage) {
-      if (!storage) setStatus('Storage not configured (add storageBucket to firebase-config).', true);
-      return;
-    }
-    setStatus('Uploading…');
+async function processImageFile(wrap, file) {
+  if (!file || !/^image\/(png|jpeg|webp)$/i.test(file.type)) {
+    setStatus('PNG, JPG, o WebP lang ang tinatanggap.', true);
+    return;
+  }
+  const ta = wrap.querySelector('.page-image');
+  if (!ta) return;
+
+  if (storage && !offlineMode) {
+    setStatus('Ini-upload…');
     try {
-      const path = `org-chart/${Date.now()}_${f.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      const path = `org-chart/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
       const r = ref(storage, path);
-      await uploadBytes(r, f);
+      await uploadBytes(r, file);
       const url = await getDownloadURL(r);
-      urlInput.value = url;
-      setStatus('Upload complete. Click Save to publish.');
+      ta.value = url;
+      wrap.querySelector('.url-mode')?.classList.add('hidden');
+      wrap.querySelector('.drop-shell')?.classList.remove('hidden');
+      updateImagePreview(wrap);
+      setStatus('Tapos na ang upload. I-save para ma-publish.');
     } catch (e) {
       setStatus(String(e?.message || e), true);
     }
+    return;
+  }
+
+  setStatus('Binabasa ang larawan…');
+  const reader = new FileReader();
+  reader.onload = () => {
+    const result = reader.result;
+    if (typeof result === 'string') {
+      ta.value = result;
+      wrap.querySelector('.url-mode')?.classList.add('hidden');
+      wrap.querySelector('.drop-shell')?.classList.remove('hidden');
+      updateImagePreview(wrap);
+      setStatus(
+        offlineMode
+          ? 'Naka-embed na ang larawan sa JSON (data URL). I-download ang JSON at i-deploy. Malaking file = malaking JSON.'
+          : ''
+      );
+    }
+  };
+  reader.onerror = () => setStatus('Hindi mabasa ang file.', true);
+  reader.readAsDataURL(file);
+}
+
+function wireImageRow(wrap) {
+  const dropShell = wrap.querySelector('.drop-shell');
+  const fileInput = wrap.querySelector('.page-file-input');
+  const browseBtn = wrap.querySelector('.browse-btn');
+  const ta = wrap.querySelector('.page-image');
+  const urlInput = wrap.querySelector('.page-image-url');
+  const urlMode = wrap.querySelector('.url-mode');
+  const toggleUrl = wrap.querySelector('.toggle-url');
+
+  function setUrlMode(on) {
+    if (!urlMode || !dropShell) return;
+    urlMode.classList.toggle('hidden', !on);
+    dropShell.classList.toggle('hidden', on);
+    if (toggleUrl) {
+      toggleUrl.textContent = on ? 'Bumalik sa drag & drop' : 'Gamitin ang URL imbes na file';
+    }
+    if (on && ta && urlInput) {
+      urlInput.value = ta.value;
+      urlInput.focus();
+    } else if (!on && ta && urlInput) {
+      ta.value = urlInput.value;
+      updateImagePreview(wrap);
+    }
+  }
+
+  toggleUrl?.addEventListener('click', () => {
+    const urlVisible = urlMode && !urlMode.classList.contains('hidden');
+    setUrlMode(!urlVisible);
   });
-  wrap.querySelector('.remove-row')?.addEventListener('click', () => {
-    wrap.remove();
+
+  urlInput?.addEventListener('input', () => {
+    if (ta) ta.value = urlInput.value;
+    updateImagePreview(wrap);
   });
+
+  const zone = dropShell;
+  if (!zone || !fileInput) return;
+
+  ;['dragenter', 'dragover'].forEach((ev) => {
+    zone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.add('border-emerald-500', 'bg-emerald-50/80');
+    });
+  });
+  ;['dragleave', 'drop'].forEach((ev) => {
+    zone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.remove('border-emerald-500', 'bg-emerald-50/80');
+    });
+  });
+  zone.addEventListener('drop', (e) => {
+    const f = e.dataTransfer?.files?.[0];
+    if (f) processImageFile(wrap, f);
+  });
+  zone.addEventListener('click', (e) => {
+    if (e.target instanceof Element && e.target.closest('.browse-btn')) return;
+    fileInput.click();
+  });
+  browseBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput.click();
+  });
+  fileInput.addEventListener('change', () => {
+    const f = fileInput.files?.[0];
+    if (f) processImageFile(wrap, f);
+    fileInput.value = '';
+  });
+}
+
+function rowTemplate(image, caption) {
+  const wrap = document.createElement('div');
+  wrap.className = 'rounded-xl border border-slate-200 bg-slate-50 p-4';
+  wrap.innerHTML = `
+    <div class="flex flex-wrap gap-4 items-start">
+      <div class="flex-1 min-w-[260px]">
+        <label class="block text-[11px] font-medium text-slate-600">Larawan (PNG / JPG)</label>
+        <div
+          class="drop-shell mt-2 cursor-pointer rounded-xl border-2 border-dashed border-slate-300 bg-white p-4 transition-colors hover:border-emerald-400 hover:bg-emerald-50/30"
+          role="button"
+          tabindex="0"
+          aria-label="I-drag ang PNG o JPG dito"
+        >
+          <input type="file" class="page-file-input sr-only" accept="image/png,image/jpeg,image/webp" />
+          <div class="drop-placeholder flex min-h-[100px] flex-col items-center justify-center gap-2 text-center">
+            <svg class="h-10 w-10 text-emerald-600/70" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <p class="text-sm text-slate-700">
+              <span class="font-medium text-emerald-800">I-drag dito</span> ang PNG o JPG, o
+              <button type="button" class="browse-btn font-semibold text-emerald-700 underline decoration-emerald-600/40 underline-offset-2 hover:text-emerald-900">pumili ng file</button>
+            </p>
+            <p class="text-[11px] text-slate-500">Tinatanggap: .png, .jpg, .jpeg, .webp</p>
+          </div>
+          <img class="page-preview mx-auto mt-2 hidden max-h-40 max-w-full rounded-lg object-contain shadow-md" alt="" />
+        </div>
+        <textarea class="page-image fixed left-0 top-0 -z-10 h-px w-px opacity-0" rows="1" aria-hidden="true"></textarea>
+        <button type="button" class="toggle-url mt-2 text-xs font-medium text-emerald-700 underline hover:text-emerald-900">
+          Gamitin ang URL imbes na file
+        </button>
+        <div class="url-mode mt-2 hidden">
+          <input
+            type="text"
+            class="page-image-url w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            placeholder="/assets/org-chart-1.png o https://..."
+          />
+        </div>
+      </div>
+      <div class="w-full sm:w-40">
+        <label class="block text-[11px] font-medium text-slate-600">Caption</label>
+        <input type="text" class="page-caption mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value="${escapeAttr(caption)}" placeholder="Page 1" />
+      </div>
+      <div class="flex items-end">
+        <button type="button" class="remove-row rounded-lg border border-red-200 bg-white px-3 py-2 text-xs text-red-700 hover:bg-red-50">Remove</button>
+      </div>
+    </div>
+  `;
+  const ta = wrap.querySelector('.page-image');
+  if (ta) ta.value = typeof image === 'string' ? image : '';
+  wireImageRow(wrap);
+  updateImagePreview(wrap);
+  if (image && typeof image === 'string' && image.length > 0 && !image.startsWith('data:')) {
+    const urlInput = wrap.querySelector('.page-image-url');
+    if (urlInput) urlInput.value = image;
+  }
+  wrap.querySelector('.remove-row')?.addEventListener('click', () => wrap.remove());
   return wrap;
 }
 
@@ -107,6 +254,12 @@ function escapeAttr(s) {
 }
 
 function getFormData() {
+  document.querySelectorAll('#pages-editor > div').forEach((wrap) => {
+    const um = wrap.querySelector('.url-mode');
+    const ui = wrap.querySelector('.page-image-url');
+    const ta = wrap.querySelector('.page-image');
+    if (um && !um.classList.contains('hidden') && ui && ta) ta.value = ui.value;
+  });
   const root = document.getElementById('pages-editor');
   const rows = root?.querySelectorAll(':scope > div') || [];
   const pages = [];
@@ -261,7 +414,7 @@ function applyOfflineUi() {
   const hint = document.getElementById('pages-hint');
   if (hint) {
     hint.textContent =
-      'Offline: maglagay ng URL ng larawan (hal. /assets/org-chart-1.png). I-replace ang PNG sa public/assets sa parehong file name, tapos i-download ang JSON at i-deploy.';
+      'I-drag ang PNG/JPG sa box, o gamitin ang URL. Offline: ang drag ay naka-embed sa JSON (data URL); malaking larawan = malaking file. I-download ang JSON pagkatapos at i-deploy.';
   }
 }
 
