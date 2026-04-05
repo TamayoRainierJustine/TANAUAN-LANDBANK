@@ -373,8 +373,22 @@ async function saveDoc() {
 }
 
 function wireUi() {
-  document.getElementById('btn-add-page')?.addEventListener('click', () => {
-    document.getElementById('pages-editor')?.appendChild(rowTemplate('', ''));
+  const editorPanel = document.getElementById('editor-panel');
+  editorPanel?.addEventListener('click', (e) => {
+    const t = e.target;
+    if (!(t instanceof Element)) return;
+    if (!t.closest('#btn-add-page')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const pe = document.getElementById('pages-editor');
+    if (!pe) return;
+    try {
+      pe.appendChild(rowTemplate('', ''));
+      setStatus('Nadagdag ang bagong pahina.');
+    } catch (err) {
+      console.error(err);
+      setStatus(err instanceof Error ? err.message : 'Hindi madagdag ang pahina.', true);
+    }
   });
 
   document.getElementById('btn-save')?.addEventListener('click', () => {
@@ -404,18 +418,12 @@ function wireLogin() {
 }
 
 function applyOfflineUi() {
-  showEl('firebase-info', true);
   showEl('login-panel', false);
   showEl('editor-panel', true);
   const lo = document.getElementById('btn-logout');
   if (lo) lo.classList.add('hidden');
   const saveBtn = document.getElementById('btn-save');
   if (saveBtn) saveBtn.textContent = 'I-download ang org-chart-pages.json';
-  const hint = document.getElementById('pages-hint');
-  if (hint) {
-    hint.textContent =
-      'I-drag ang PNG/JPG sa box, o gamitin ang URL. Offline: ang drag ay naka-embed sa JSON (data URL); malaking larawan = malaking file. I-download ang JSON pagkatapos at i-deploy.';
-  }
 }
 
 function main() {
@@ -428,7 +436,6 @@ function main() {
   }
 
   offlineMode = false;
-  showEl('firebase-info', false);
   wireUi();
   wireLogin();
 
