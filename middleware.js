@@ -2,6 +2,10 @@ import { next } from '@vercel/functions';
 
 const COOKIE = 'lb_staff';
 
+/** Must match api/login.js — used to verify session cookie HMAC. */
+const DEFAULT_AUTH_SECRET =
+  'lb-tanauan-v1-8f4e2c9a1d7b3e5f0a6c4d8e2b9f1a3c5d7e9b0f2a4c6d8e0f1a2b3c4';
+
 /**
  * @param {string} token
  * @param {string} secret
@@ -79,7 +83,7 @@ export default async function middleware(request) {
     return next();
   }
 
-  const secret = process.env.AUTH_SECRET || '';
+  const secret = process.env.AUTH_SECRET || DEFAULT_AUTH_SECRET;
   const url = new URL(request.url);
   const p = url.pathname;
 
