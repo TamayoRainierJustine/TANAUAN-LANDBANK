@@ -11,6 +11,11 @@ import config from '/firebase-config.js';
 
 const DOC_PATH = ['siteConfig', 'orgChart'];
 
+/** @type {boolean} */
+let offlineMode = false;
+let staffInstructionsBackup =
+  'I-edit ang JSON na ito o gamitin ang web editor. I-deploy ang site pagkatapos.';
+
 function isFirebaseReady() {
   return config && typeof config.apiKey === 'string' && config.apiKey.length > 0;
 }
@@ -44,6 +49,14 @@ function initFirebase() {
 }
 
 function rowTemplate(image, caption) {
+  const uploadCol = offlineMode
+    ? ''
+    : `
+      <div>
+        <label class="block text-[11px] font-medium text-slate-600">Upload PNG</label>
+        <input type="file" accept="image/png,image/jpeg,image/webp" class="page-file mt-1 text-xs" />
+      </div>`;
+
   const wrap = document.createElement('div');
   wrap.className = 'rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2';
   wrap.innerHTML = `
@@ -56,10 +69,7 @@ function rowTemplate(image, caption) {
         <label class="block text-[11px] font-medium text-slate-600">Caption</label>
         <input type="text" class="page-caption mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value="${escapeAttr(caption)}" placeholder="Page 1" />
       </div>
-      <div>
-        <label class="block text-[11px] font-medium text-slate-600">Upload PNG</label>
-        <input type="file" accept="image/png,image/jpeg,image/webp" class="page-file mt-1 text-xs" />
-      </div>
+      ${uploadCol}
       <button type="button" class="remove-row rounded-lg border border-red-200 bg-white px-3 py-2 text-xs text-red-700 hover:bg-red-50">Remove</button>
     </div>
   `;
@@ -147,6 +157,51 @@ async function loadInitialForm() {
   }
 }
 
+async function loadOfflineForm() {
+  try {
+    const res = await fetch('/org-chart-pages.json', { cache: 'no-store' });
+    if (res.ok) {
+      const j = await res.json();
+      if (typeof j.staffInstructions === 'string') staffInstructionsBackup = j.staffInstructions;
+      fillForm(j);
+    } else {
+      fillForm({ pages: [{ image: '/assets/org-chart-1.png', caption: 'Page 1' }] });
+    }
+  } catch {
+    fillForm({ pages: [{ image: '/assets/org-chart-1.png', caption: 'Page 1' }] });
+  }
+}
+
+function saveOfflineDoc() {
+  setStatus('Preparing file…');
+  const payload = getFormData();
+  if (!payload.pages.length) {
+    setStatus('Magdagdag ng kahit isang pahina na may Image URL.', true);
+    return;
+  }
+  const out = {
+    googleSlidesEmbedUrl: payload.googleSlidesEmbedUrl,
+    showPngGallery: payload.showPngGallery,
+    pages: payload.pages,
+    staffInstructions: staffInstructionsBackup,
+    googleSlidesCaption: payload.googleSlidesCaption || '',
+  };
+
+  const json = JSON.stringify(out, null, 2);
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'org-chart-pages.json';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  setStatus(
+    'Na-download ang org-chart-pages.json. Ilagay ito sa folder na public/ (palitan ang luma), tapos i-commit at i-deploy ang site.'
+  );
+}
+
 async function saveDoc() {
   if (!db) return;
   setStatus('Saving…');
@@ -168,8 +223,15 @@ function wireUi() {
   document.getElementById('btn-add-page')?.addEventListener('click', () => {
     document.getElementById('pages-editor')?.appendChild(rowTemplate('', ''));
   });
-  document.getElementById('btn-save')?.addEventListener('click', () => saveDoc());
-  document.getElementById('btn-logout')?.addEventListener('click', () => signOut(auth));
+
+  document.getElementById('btn-save')?.addEventListener('click', () => {
+    if (offlineMode) saveOfflineDoc();
+    else saveDoc();
+  });
+
+  if (!offlineMode) {
+    document.getElementById('btn-logout')?.addEventListener('click', () => signOut(auth));
+  }
 }
 
 function wireLogin() {
@@ -188,14 +250,32 @@ function wireLogin() {
   });
 }
 
+function applyOfflineUi() {
+  showEl('firebase-info', true);
+  showEl('login-panel', false);
+  showEl('editor-panel', true);
+  const lo = document.getElementById('btn-logout');
+  if (lo) lo.classList.add('hidden');
+  const saveBtn = document.getElementById('btn-save');
+  if (saveBtn) saveBtn.textContent = 'I-download ang org-chart-pages.json';
+  const hint = document.getElementById('pages-hint');
+  if (hint) {
+    hint.textContent =
+      'Offline: maglagay ng URL ng larawan (hal. /assets/org-chart-1.png). I-replace ang PNG sa public/assets sa parehong file name, tapos i-download ang JSON at i-deploy.';
+  }
+}
+
 function main() {
   if (!initFirebase()) {
-    showEl('firebase-missing', true);
-    showEl('login-panel', false);
-    showEl('editor-panel', false);
+    offlineMode = true;
+    applyOfflineUi();
+    wireUi();
+    loadOfflineForm().then(() => setStatus(''));
     return;
   }
 
+  offlineMode = false;
+  showEl('firebase-info', false);
   wireUi();
   wireLogin();
 
