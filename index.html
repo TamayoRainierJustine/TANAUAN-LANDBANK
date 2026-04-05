@@ -618,7 +618,8 @@
                 </p>
               </div>
               <p class="max-w-md text-xs text-slate-600">
-                View the organizational chart pages below. You can still download the editable file if needed.
+                View the organizational chart pages below. Updates are managed by replacing chart images or editing the
+                config file—no coding required for content changes.
               </p>
             </div>
 
@@ -626,39 +627,25 @@
               <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p class="text-sm font-semibold text-slate-900">Organizational Chart (Pages)</p>
-                  <p class="mt-1 text-xs text-slate-600">Click any page to open a larger view in a new tab.</p>
+                  <p class="mt-1 text-xs text-slate-600">
+                    Live Slides (optional) and/or static pages—see
+                    <code class="rounded bg-slate-100 px-1 py-0.5 text-[10px]">org-chart-pages.json</code>.
+                  </p>
                 </div>
               </div>
 
-              <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                <a href="/assets/org-chart-1.png" target="_blank" rel="noopener" class="group block">
-                  <figure class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-                    <img src="/assets/org-chart-1.png" alt="Organizational chart page 1" class="w-full h-auto object-contain transition group-hover:scale-[1.01]" loading="lazy" />
-                  </figure>
-                  <p class="mt-2 text-center text-xs font-medium text-slate-700">Page 1</p>
-                </a>
-
-                <a href="/assets/org-chart-2.png" target="_blank" rel="noopener" class="group block">
-                  <figure class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-                    <img src="/assets/org-chart-2.png" alt="Organizational chart page 2" class="w-full h-auto object-contain transition group-hover:scale-[1.01]" loading="lazy" />
-                  </figure>
-                  <p class="mt-2 text-center text-xs font-medium text-slate-700">Page 2</p>
-                </a>
-
-                <a href="/assets/org-chart-3.png" target="_blank" rel="noopener" class="group block">
-                  <figure class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-                    <img src="/assets/org-chart-3.png" alt="Organizational chart page 3" class="w-full h-auto object-contain transition group-hover:scale-[1.01]" loading="lazy" />
-                  </figure>
-                  <p class="mt-2 text-center text-xs font-medium text-slate-700">Page 3</p>
-                </a>
-
-                <a href="/assets/org-chart-4.png" target="_blank" rel="noopener" class="group block">
-                  <figure class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-                    <img src="/assets/org-chart-4.png" alt="Organizational chart page 4" class="w-full h-auto object-contain transition group-hover:scale-[1.01]" loading="lazy" />
-                  </figure>
-                  <p class="mt-2 text-center text-xs font-medium text-slate-700">Page 4</p>
-                </a>
+              <div
+                id="org-chart-slides-wrap"
+                class="mt-6 hidden w-full overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-inner"
+              >
+                <div
+                  id="org-chart-slides-inner"
+                  class="relative aspect-video w-full min-h-[240px] sm:min-h-[320px]"
+                ></div>
+                <p id="org-chart-slides-caption" class="hidden border-t border-slate-200 bg-white px-3 py-2 text-center text-[11px] text-slate-600"></p>
               </div>
+
+              <div id="org-chart-gallery" class="mt-6 grid gap-4 sm:grid-cols-2" data-org-chart-root></div>
             </div>
           </div>
         </section>

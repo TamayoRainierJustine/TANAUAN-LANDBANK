@@ -1,0 +1,11 @@
+{
+  "googleSlidesEmbedUrl": "",
+  "showPngGallery": true,
+  "pages": [
+    { "image": "/assets/org-chart-1.png", "caption": "Page 1" },
+    { "image": "/assets/org-chart-2.png", "caption": "Page 2" },
+    { "image": "/assets/org-chart-3.png", "caption": "Page 3" },
+    { "image": "/assets/org-chart-4.png", "caption": "Page 4" }
+  ],
+  "staffInstructions": "PNG: I-edit sa PowerPoint/Word, export PNG, palitan ang files sa public/assets (parehong file name). Bagong pahina: idagdag sa \"pages\" dito. Google Slides: Sa Slides, File → Share → Publish to web → kopyahin ang embed URL, ilagay sa googleSlidesEmbedUrl. Kung Slides lang ang ipapakita, iset ang showPngGallery sa false. I-deploy ulit ang site pagkatapos."
+}
