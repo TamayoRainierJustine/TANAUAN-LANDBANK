@@ -7,5 +7,5 @@
     { "image": "/assets/org-chart-3.png", "caption": "Page 3" },
     { "image": "/assets/org-chart-4.png", "caption": "Page 4" }
   ],
-  "staffInstructions": "PNG: I-edit sa PowerPoint/Word, export PNG, palitan ang files sa public/assets (parehong file name). Bagong pahina: idagdag sa \"pages\" dito. Google Slides: Sa Slides, File → Share → Publish to web → kopyahin ang embed URL, ilagay sa googleSlidesEmbedUrl. Kung Slides lang ang ipapakita, iset ang showPngGallery sa false. I-deploy ulit ang site pagkatapos."
+  "staffInstructions": "Edit charts in PowerPoint or Word, export as PNG, and replace files in public/assets (same filenames). To add a page, append an entry under \"pages\" in this file. For Google Slides: File → Share → Publish to web → copy the embed URL into googleSlidesEmbedUrl. Set showPngGallery to false to show Slides only. Redeploy the site after changes."
 }

@@ -14,7 +14,7 @@ const DOC_PATH = ['siteConfig', 'orgChart'];
 /** @type {boolean} */
 let offlineMode = false;
 let staffInstructionsBackup =
-  'I-edit ang JSON na ito o gamitin ang web editor. I-deploy ang site pagkatapos.';
+  'Update this file via the staff web editor or replace it in the repository, then deploy.';
 
 function isFirebaseReady() {
   return config && typeof config.apiKey === 'string' && config.apiKey.length > 0;
@@ -70,49 +70,89 @@ function updateImagePreview(wrap) {
   };
 }
 
+function revokeRowBlobPreview(wrap) {
+  const u = wrap._previewBlobUrl;
+  if (u) {
+    try {
+      URL.revokeObjectURL(u);
+    } catch (_) {}
+    wrap._previewBlobUrl = undefined;
+  }
+}
+
+function showInstantImagePreview(wrap, file) {
+  revokeRowBlobPreview(wrap);
+  const blobUrl = URL.createObjectURL(file);
+  wrap._previewBlobUrl = blobUrl;
+  const img = wrap.querySelector('.page-preview');
+  const placeholder = wrap.querySelector('.drop-placeholder');
+  if (img) {
+    img.src = blobUrl;
+    img.classList.remove('hidden');
+    img.alt = 'Preview';
+    placeholder?.classList.add('hidden');
+  }
+}
+
 async function processImageFile(wrap, file) {
   if (!file || !/^image\/(png|jpeg|webp)$/i.test(file.type)) {
-    setStatus('PNG, JPG, o WebP lang ang tinatanggap.', true);
+    setStatus('Only PNG, JPG, or WebP images are accepted.', true);
     return;
   }
   const ta = wrap.querySelector('.page-image');
   if (!ta) return;
 
+  showInstantImagePreview(wrap, file);
+
   if (storage && !offlineMode) {
-    setStatus('Ini-upload…');
+    setStatus('Uploading…');
     try {
       const path = `org-chart/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
       const r = ref(storage, path);
       await uploadBytes(r, file);
       const url = await getDownloadURL(r);
+      revokeRowBlobPreview(wrap);
       ta.value = url;
       wrap.querySelector('.url-mode')?.classList.add('hidden');
       wrap.querySelector('.drop-shell')?.classList.remove('hidden');
       updateImagePreview(wrap);
-      setStatus('Tapos na ang upload. I-save para ma-publish.');
+      setStatus('Upload complete. Click Save to publish.');
     } catch (e) {
+      revokeRowBlobPreview(wrap);
       setStatus(String(e?.message || e), true);
+      updateImagePreview(wrap);
     }
     return;
   }
 
-  setStatus('Binabasa ang larawan…');
+  setStatus('Processing image…');
   const reader = new FileReader();
   reader.onload = () => {
     const result = reader.result;
     if (typeof result === 'string') {
+      revokeRowBlobPreview(wrap);
       ta.value = result;
       wrap.querySelector('.url-mode')?.classList.add('hidden');
       wrap.querySelector('.drop-shell')?.classList.remove('hidden');
+      const img = wrap.querySelector('.page-preview');
+      if (img) {
+        img.src = result;
+        img.classList.remove('hidden');
+      }
+      wrap.querySelector('.drop-placeholder')?.classList.add('hidden');
       updateImagePreview(wrap);
       setStatus(
         offlineMode
-          ? 'Naka-embed na ang larawan sa JSON (data URL). I-download ang JSON at i-deploy. Malaking file = malaking JSON.'
+          ? 'Image embedded as a data URL. Download the JSON file and deploy. Large images produce a large JSON file.'
           : ''
       );
     }
   };
-  reader.onerror = () => setStatus('Hindi mabasa ang file.', true);
+  reader.onerror = () => {
+    revokeRowBlobPreview(wrap);
+    setStatus('Could not read the selected file.', true);
+    updateImagePreview(wrap);
+  };
   reader.readAsDataURL(file);
 }
 
@@ -130,7 +170,7 @@ function wireImageRow(wrap) {
     urlMode.classList.toggle('hidden', !on);
     dropShell.classList.toggle('hidden', on);
     if (toggleUrl) {
-      toggleUrl.textContent = on ? 'Bumalik sa drag & drop' : 'Gamitin ang URL imbes na file';
+      toggleUrl.textContent = on ? 'Back to drag and drop' : 'Enter image URL instead';
     }
     if (on && ta && urlInput) {
       urlInput.value = ta.value;
@@ -193,12 +233,12 @@ function rowTemplate(image, caption) {
   wrap.innerHTML = `
     <div class="flex flex-wrap gap-4 items-start">
       <div class="flex-1 min-w-[260px]">
-        <label class="block text-[11px] font-medium text-slate-600">Larawan (PNG / JPG)</label>
+        <label class="block text-[11px] font-medium text-slate-600">Image (PNG / JPG)</label>
         <div
           class="drop-shell mt-2 cursor-pointer rounded-xl border-2 border-dashed border-slate-300 bg-white p-4 transition-colors hover:border-emerald-400 hover:bg-emerald-50/30"
           role="button"
           tabindex="0"
-          aria-label="I-drag ang PNG o JPG dito"
+          aria-label="Drop a PNG or JPG image here"
         >
           <input type="file" class="page-file-input sr-only" accept="image/png,image/jpeg,image/webp" />
           <div class="drop-placeholder flex min-h-[100px] flex-col items-center justify-center gap-2 text-center">
@@ -206,22 +246,22 @@ function rowTemplate(image, caption) {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <p class="text-sm text-slate-700">
-              <span class="font-medium text-emerald-800">I-drag dito</span> ang PNG o JPG, o
-              <button type="button" class="browse-btn font-semibold text-emerald-700 underline decoration-emerald-600/40 underline-offset-2 hover:text-emerald-900">pumili ng file</button>
+              <span class="font-medium text-emerald-800">Drag and drop</span> a PNG or JPG here, or
+              <button type="button" class="browse-btn font-semibold text-emerald-700 underline decoration-emerald-600/40 underline-offset-2 hover:text-emerald-900">browse files</button>
             </p>
-            <p class="text-[11px] text-slate-500">Tinatanggap: .png, .jpg, .jpeg, .webp</p>
+            <p class="text-[11px] text-slate-500">Accepted: .png, .jpg, .jpeg, .webp</p>
           </div>
           <img class="page-preview mx-auto mt-2 hidden max-h-40 max-w-full rounded-lg object-contain shadow-md" alt="" />
         </div>
-        <textarea class="page-image fixed left-0 top-0 -z-10 h-px w-px opacity-0" rows="1" aria-hidden="true"></textarea>
+        <textarea class="page-image sr-only" rows="1" aria-label="Image URL or embedded data"></textarea>
         <button type="button" class="toggle-url mt-2 text-xs font-medium text-emerald-700 underline hover:text-emerald-900">
-          Gamitin ang URL imbes na file
+          Enter image URL instead
         </button>
         <div class="url-mode mt-2 hidden">
           <input
             type="text"
             class="page-image-url w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            placeholder="/assets/org-chart-1.png o https://..."
+            placeholder="/assets/org-chart-1.png or https://…"
           />
         </div>
       </div>
@@ -242,7 +282,10 @@ function rowTemplate(image, caption) {
     const urlInput = wrap.querySelector('.page-image-url');
     if (urlInput) urlInput.value = image;
   }
-  wrap.querySelector('.remove-row')?.addEventListener('click', () => wrap.remove());
+  wrap.querySelector('.remove-row')?.addEventListener('click', () => {
+    revokeRowBlobPreview(wrap);
+    wrap.remove();
+  });
   return wrap;
 }
 
@@ -329,7 +372,7 @@ function saveOfflineDoc() {
   setStatus('Preparing file…');
   const payload = getFormData();
   if (!payload.pages.length) {
-    setStatus('Magdagdag ng kahit isang pahina na may Image URL.', true);
+    setStatus('Add at least one page with an image.', true);
     return;
   }
   const out = {
@@ -351,7 +394,7 @@ function saveOfflineDoc() {
   document.body.removeChild(a);
   URL.revokeObjectURL(a.href);
   setStatus(
-    'Na-download ang org-chart-pages.json. Ilagay ito sa folder na public/ (palitan ang luma), tapos i-commit at i-deploy ang site.'
+    'Downloaded org-chart-pages.json. Replace the file under public/ in your project, then commit and deploy.'
   );
 }
 
@@ -384,10 +427,10 @@ function wireUi() {
     if (!pe) return;
     try {
       pe.appendChild(rowTemplate('', ''));
-      setStatus('Nadagdag ang bagong pahina.');
+      setStatus('New page added.');
     } catch (err) {
       console.error(err);
-      setStatus(err instanceof Error ? err.message : 'Hindi madagdag ang pahina.', true);
+      setStatus(err instanceof Error ? err.message : 'Could not add a new page.', true);
     }
   });
 
@@ -423,7 +466,7 @@ function applyOfflineUi() {
   const lo = document.getElementById('btn-logout');
   if (lo) lo.classList.add('hidden');
   const saveBtn = document.getElementById('btn-save');
-  if (saveBtn) saveBtn.textContent = 'I-download ang org-chart-pages.json';
+  if (saveBtn) saveBtn.textContent = 'Download org-chart-pages.json';
 }
 
 function main() {
